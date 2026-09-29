@@ -1142,6 +1142,38 @@ function answer(idx){
   let fbHtml = '';
   if(result === 'correct'){
     fbHtml = `<div class="feedback" style="background:#18322a;color:#c8f0d6"><b>✓ Doğru!</b> ${q.word} → ${q.meaning}</div>`;
+    const ctx = CONTEXT[q.word];
+    if(ctx && ctx.ex){
+      fbHtml += `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, q.word)}"</div></div>`;
+    }
+  } else if(result === 'wrong'){
+    fbHtml = `<div class="feedback" style="background:#3a2029;color:#ffd1da"><b>✗ Yanlış.</b> Doğru: <b>${q.correctAnswer}</b></div>`;
+    fbHtml += renderLearnBox(q.word);
+  } else {
+    fbHtml = `<div class="feedback" style="background:#2d2b40;color:#d0c8ff"><b>🤷 Bilmiyorum.</b> Doğru: <b>${q.correctAnswer}</b></div>`;
+    fbHtml += renderLearnBox(q.word);
+  }
+  fb.innerHTML = fbHtml;
+
+  const next = $('#qnext');
+  
+  if(result === 'correct'){
+    next.classList.add('hidden');
+    setTimeout(() => { nextQuestion(); }, 700);
+  } else {
+    next.classList.remove('hidden');
+    next.textContent = (S.current + 1 >= S.questions.length) ? 'Bitir →' : 'Sonraki →';
+  }
+}
+
+  if(result === 'wrong') addWrong(q.word, q.meaning);
+  if(result === 'dontknow') addDontKnow(q.word, q.meaning);
+  if(result === 'correct'){ removeFromWrong(q.word); removeFromDontKnow(q.word); }
+
+  const fb = $('#qfeedback');
+  let fbHtml = '';
+  if(result === 'correct'){
+    fbHtml = `<div class="feedback" style="background:#18322a;color:#c8f0d6"><b>✓ Doğru!</b> ${q.word} → ${q.meaning}</div>`;
     // Doğruysa sadece kısa örnek göster (bonus)
     const ctx = CONTEXT[q.word];
     if(ctx && ctx.ex){
