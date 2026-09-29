@@ -88,7 +88,7 @@ input[type=search]:focus{border-color:#4b70e4}
 <section id="home" class="screen card active">
   <span class="badge">YDS KELİME LAB · v5</span>
   <h1>10 Bölümlük Oyun 🎮</h1>
-  <p>Her bölümde <b>20 soru</b>. Yanlış veya bilmediğin kelimeler için <b>örnek cümle + çağrışım ipucu</b> gösterilir.</p>
+  <p>Her bölümde <b>20 soru</b>. Doğru cevapta otomatik geçer; yanlış/bilmiyorum'da örnek cümle + çağrışım gösterilir.</p>
   <div class="home-stats" id="homeStats"></div>
   <div class="menu">
     <button class="btn primary" data-action="nav" data-target="levels">🎯 Oyunu Başlat <small>10 bölümlük kelime yolculuğu</small></button>
@@ -218,755 +218,182 @@ input[type=search]:focus{border-color:#4b70e4}
 <div class="toast" id="toast"></div>
 
 <script>
-/* ============================================================
-   KELİMELER — [ingilizce, türkçe, seviye]
-   ============================================================ */
+/* KELİME VERİSİ */
 const WORDS = [
-/* === SEVİYE 1 === */
-["pain","acı, sızı, ağrı",1],["trust","güvenmek",1],["gift","hediye; yetenek",1],
-["wheel","tekerlek",1],["mud","çamur",1],["monster","canavar",1],["vote","oy vermek",1],
-["short","kısa",1],["shout","bağırmak",1],["tower","kule",1],["seed","tohum",1],
-["shade","gölge",1],["edge","kenar",1],["rate","oran",1],["region","bölge",1],
-["respect","saygı, hürmet",1],["reward","ödül",1],["partner","ortak",1],["talent","yetenek",1],
-["tax","vergi",1],["doubt","şüphe, kuşku",1],["fool","aldatmak; kandırmak",1],
-["gain","kazanmak, elde etmek",1],["halt","durmak, mola",1],["item","madde; tane",1],
-["law","hukuk, kanun",1],["lane","dar yol; şerit",1],["pale","solgun",1],
-["poll","oylama; anket",1],["staff","personel",1],["statue","heykel",1],
-["tiny","küçük, ufacık",1],["torn","yırtık",1],["tunnel","altgeçit",1],
-["union","birlik; sendika",1],["unique","eşsiz; tek",1],["victim","kurban",1],
-["victory","zafer",1],["whip","kamçılamak",1],["witness","şahit",1],
-["sink","dibe batmak",1],["skip","atlamak",1],["slope","eğim",1],["smooth","yumuşak",1],
-["tear","yırtmak; gözyaşı",1],["weakness","zayıflık, zaaf",1],["wealthy","zengin, varlıklı",1],
-["percent","yüzde",1],["private","özel, şahsa ait",1],["opinion","fikir",1],
-
-/* === SEVİYE 2 === */
-["abandon","terk etmek, vazgeçmek",2],["accurate","kesin, doğru",2],
-["admire","hayran olmak, takdir etmek",2],["admit","itiraf etmek, kabul etmek",2],
-["alter","değiştirmek",2],["annual","yıllık",2],["approach","yaklaşım, tarz",2],
-["article","makale; madde; eşya",2],["benefit","fayda, yarar",2],["budget","bütçe",2],
-["capable","yetenekli, yetkili",2],["charge","ücret; harç; suçlama",2],
-["complete","tamamlamak, tamamen",2],["consider","düşünmek, göz önünde tutmak",2],
-["consume","tüketmek",2],["decline","azalmak, reddetmek",2],["delight","sevinç; zevk; haz",2],
-["detect","tespit etmek",2],["device","alet; aygıt",2],["divide","bölmek, ayırmak",2],
-["eager","istekli, hevesli",2],["employer","işveren",2],["essential","gerekli, temel",2],
-["expand","genişletmek",2],["explore","keşfetmek",2],["fabric","kumaş; doku",2],
-["fever","ateş; hararet",2],["float","yüzmek; su üstünde kalmak",2],["foggy","sisli",2],
-["govern","yönetmek, idare etmek",2],["ignore","aldırmamak, bilmezden gelmek",2],
-["initial","ilk; başlangıç",2],["intention","niyet",2],["issue","konu, yayın/baskı",2],
-["landscape","manzara",2],["personality","şahsiyet",2],["policy","politika, davranış biçimi",2],
-["predict","tahmin etmek",2],["prevent","engellemek, korumak",2],["previous","önceki, sabık",2],
-["proposal","önerme, niyet etme",2],["prospect","başarı şansı",2],
-["recover","iyileşmek, yeniden elde etmek",2],["remove","çıkarmak, temizlemek",2],
-["require","gerektirmek, istemek",2],["select","seçmek, ayırmak",2],["separate","ayırmak",2],
-["shelter","sığınak; korumak",2],["shield","kalkan; korumak",2],["survive","hayatta kalmak",2],
-
-/* === SEVİYE 3 === */
-["absolute","mutlak, tamamen",3],["abundant","bol, çok",3],["adequate","yeterli, uygun",3],
-["adjust","ayarlamak, uydurmak",3],["aggressive","saldırgan",3],["alliance","ittifak",3],
-["ally","müttefik",3],["anticipate","tahmin etmek, ona göre davranmak",3],
-["appreciate","takdir etmek",3],["argue","tartışmak, iddia etmek",3],
-["assess","değerlendirmek",3],["bias","önyargı",3],["conceal","gizlemek, saklamak",3],
-["confidence","güven, itimat",3],["confirm","teyit etmek; onaylamak",3],
-["congratulate","tebrik etmek",3],["consequence","sonuç",3],
-["conserve","korumak, muhafaza etmek",3],["controversial","tartışmalı",3],
-["crucial","çok önemli, kritik",3],["deadline","son teslim tarihi",3],["decade","on yıl",3],
-["deny","inkâr etmek, reddetmek",3],["desperate","çaresiz, umutsuz",3],
-["determine","belirlemek; tespit etmek",3],["distinguish","ayırt etmek",3],
-["efficient","verimli",3],["emerge","ortaya çıkmak",3],["emit","yaymak",3],
-["encourage","teşvik etmek",3],["enormous","çok büyük, muazzam",3],
-["ensure","sağlamak, güvenceye almak",3],["exposure","ifşa; korunmasızlık",3],
-["extensive","büyük, geniş kapsamlı",3],["faint","donuk; baygın",3],
-["flee","kaçmak; firar etmek",3],["fortunate","şanslı; talihli",3],["frank","açık sözlü; samimi",3],
-["harsh","sert, kaba, haşin",3],["hasten","acele etmek",3],["hesitate","tereddüt etmek",3],
-["indicate","belirtmek; göstergesi olmak",3],["intense","yoğun, şiddetli",3],
-["invest","yatırım yapmak; görevlendirmek",3],["notify","bildirmek, haber vermek",3],
-["punish","cezalandırmak",3],["reduce","azaltmak, indirmek",3],
-["reveal","açığa çıkarmak, ifşa etmek",3],["reject","reddetmek, geri çevirmek",3],
-["suggestion","öneri, telkin",3],
-
-/* === SEVİYE 4 === */
-["acknowledgement","onay, kabul etme",4],["acute","keskin; şiddetli",4],
-["ambiguous","birden fazla anlama gelebilen",4],["amend","düzeltmek, değiştirmek",4],
-["ample","yeterli, bol",4],["apparel","giyim, kıyafet",4],["appetite","iştah, arzu",4],
-["apprehension","korku, endişe, kavrayış",4],["approval","tasvip, onay, resmi izin",4],
-["brutality","vahşet, acımasızlık",4],["competent","yetenekli; yetkili",4],
-["complaint","şikâyet",4],["composed","birleşmiş; kendine hâkim",4],["compromise","uzlaşmak",4],
-["condense","yoğunlaştırmak; özetlemek",4],["confidential","gizli; sır",4],
-["confiscate","müsadere etmek; haczetmek",4],["conscientious","vicdanlı; dikkatli",4],
-["constraint","kısıtlama",4],["contempt","küçümseme, hor görme",4],["convince","ikna etmek",4],
-["deception","aldatma",4],["deceptive","aldatıcı",4],["dedicate","adamak",4],
-["defeat","yenmek; bozguna uğratmak",4],["deliberate","kasıtlı; dikkatli düşünülmüş",4],
-["delicate","nazik; hassas; narin",4],["deprive","mahrum bırakmak",4],
-["deteriorate","kötüleşmek",4],["diminish","azalmak, küçülmek",4],
-["disclose","açıklamak, ifşa etmek",4],["discriminate","ayırt etmek, ayrım yapmak",4],
-["ditch","hendek; ark; kanal",4],["divert","başka yöne çevirmek",4],
-["duplicate","kopyasını yapmak",4],["elevation","yükseltme; terfi",4],
-["embarrass","mahcup etmek",4],["exotic","alışılmadık, egzotik",4],
-["explicit","açık, belirgin",4],["exploit","sömürmek; fırsattan yararlanmak",4],
-["expose","ifşa etmek; maruz bırakmak",4],["feasible","yapılabilir; mümkün",4],
-["feeble","zayıf; kuvvetsiz",4],["flawless","kusursuz",4],
-["fluctuate","dalgalanmak; inip çıkmak",4],["grievance","şikâyet, yakınma",4],
-["hazardous","tehlikeli, zararlı",4],["hectic","heyecanlı; telaşlı",4],["hence","bundan dolayı",4],
-
-/* === SEVİYE 5 === */
-["abruptly","ani ve nezaketsiz biçimde",5],["absurd","saçma, gülünç",5],
-["affordable","uygun fiyatlı, hesaplı",5],["agreeable","razı; hoş; iyi",5],
-["brush up","tazelemek; gözden geçirmek",5],["concurrence","anlaşma; uyuşma",5],
-["deficient","yetersiz",5],["destitute","yoksul, muhtaç",5],
-["dismiss","işten çıkarmak; reddetmek",5],["disprove","yanlışlığını kanıtlamak",5],
-["divulge","ifşa etmek, açığa vurmak",5],["drowsy","uykulu",5],
-["dwindle","giderek azalmak",5],["embark","binmek, başlamak",5],
-["excerpt","alıntı, seçme parça",5],["exhibition","sergi, gösteri",5],
-["expel","kovmak, ihraç etmek",5],["exquisite","zarif, nefis",5],
-["fabrication","uydurma, imalat",5],["fatigue","yorgunluk; yormak",5],
-["fearsome","korkunç",5],["futile","boşuna, beyhude",5],
-["germinate","çimlenmek, çimlendirmek",5],["gist","ana fikir",5],["gleeful","neşe dolu",5],
-["globe","küre",5],["grumble","şikâyet etmek",5],["honour","onurlandırmak",5],
-["impartial","tarafsız",5],["imprecise","kesin olmayan, dikkatsiz",5],
-["impression","izlenim; etki",5],["impromptu","hazırlıksız; doğaçlama",5],
-["inactive","hareketsiz",5],["inadvertent","kasıtsız",5],["inconsiderate","düşüncesiz",5],
-["incredible","inanılmaz",5],["incurable","tedavi edilemez",5],["indecisive","kararsız",5],
-["indifferent","kayıtsız; umarsız",5],["indispensable","vazgeçilmez; zorunlu",5],
-["indistinct","belirsiz; bulanık",5],["induce","ikna etmek",5],
-["industrious","çalışkan; gayretli",5],["inflammable","kolay tutuşan; parlayıcı",5],
-["insignificant","değersiz; önemsiz",5],["insolent","küstah; terbiyesiz",5],
-["inspire","ilham vermek; teşvik etmek",5],["instructive","öğretici",5],
-["insult","hakaret etmek",5],["intensity","yoğunluk; güçlülük",5],
-
-/* === SEVİYE 6 === */
-["intermittent","aralıklı; kesik kesik",6],["intricate","karmaşık; girift",6],
-["investigator","araştırıcı; dedektif",6],["investment","yatırım",6],
-["irrelevant","konu dışı, ilgisiz",6],["irresponsible","sorumsuz",6],
-["liable","sorumlu; yükümlü",6],["negligent","ihmalkâr",6],
-["notorious","adı çıkmış, kötü şöhretli",6],["novelist","romancı",6],
-["objection","itiraz, sakınca",6],["obligation","mecburiyet",6],
-["obscured","gizli, saklı; anlaşılması güç",6],["obsess","aklına takılmak",6],
-["obstinate","inatçı, dik başlı",6],["occasion","fırsat; özel olay",6],["odorless","kokusuz",6],
-["outrage","öfke, hiddet; rezalet",6],["overdue","vadesi geçmiş, gecikmiş",6],
-["oversee","denetlemek",6],["oversimplify","aşırı basitleştirmek",6],
-["overturn","devirmek; tepetaklak etmek",6],["peculiarity","özellik, tuhaflık",6],
-["pessimistic","kötümser",6],["phony","sahte, düzmece",6],["plentiful","bol, bereketli",6],
-["plunge","dalma, fırlama",6],["poetic","şiirsel",6],["postpone","ertelemek",6],
-["praise","övmek",6],["precaution","tedbir, önlem",6],["precisely","tam olarak, kesinlikle",6],
-["prediction","tahmin",6],["premium","sigorta primi; ödül, prim",6],["presume","varsaymak",6],
-["pretend","rolüne girmek; bahane",6],["pretext","bahane",6],["preview","ilk gösterim",6],
-["prodigious","muazzam, kocaman",6],["profound","derin, bilgili; etkileyici",6],
-["promote","terfi ettirmek",6],["promotion","terfi",6],["punctual","dakik",6],
-["punctuality","dakiklik; zamanında olma",6],["purify","temizlemek, arındırmak",6],
-["pursue","peşine düşmek, takip etmek",6],["quarter","çeyrek; bölge, semt",6],
-["quartet","dörtlü",6],["raise","yukarı kaldırmak; artırmak",6],["readily","kolayca; seve seve",6],
-
-/* === SEVİYE 7 === */
-["recast","yeniden yapmak; değiştirmek",7],["recent","yakın zamanda olmuş",7],
-["recession","gerileme, durgunluk, azalma",7],["reckless","aldırışsız, kayıtsız",7],
-["reckon","hesaplamak; tahmin etmek",7],["recruit","üye yapmak, işe almak",7],
-["refrain","kendini tutmak, sakınmak",7],["refugee","mülteci",7],
-["refute","yalanlamak, çürütmek",7],["rejection","ret",7],
-["relentless","amansız; acımasız",7],["reliance","güven; itimat",7],
-["relief","ferahlama; kurtarma",7],["reluctant","isteksiz, tereddütlü",7],
-["reluctantly","gönülsüzce",7],["remark","söz söyleme; fark etme",7],
-["remarkable","dikkate değer",7],["renovation","yenileme, onarım",7],
-["represent","temsil etmek",7],["reprimand","azar; paylama",7],["reprove","azarlamak",7],
-["reputation","ün; itibar",7],["reservation","yer ayırtma; şart, ihtiyaç",7],
-["resign","istifa etmek",7],["resignation","istifa; kabullenme",7],["resonance","tınlama",7],
-["restraint","zaptetme; sınırlama",7],["restriction","sınırlama",7],
-["resultant","sonucunda ortaya çıkan",7],["revere","saymak; saygı göstermek",7],
-["revise","gözden geçirmek",7],["revive","yeniden canlanmak",7],
-["ridiculous","gülünç derecede saçma",7],["rim","kenar",7],["rival","rakip",7],
-["rot","çürüme",7],["rub","ovalamak",7],["rugged","zor, kaba, yontulmamış, pürüzlü",7],
-["rule out","elemek; reddetmek",7],["runaway","kaçak",7],
-["rush","aceleyle koşmak, hücum etmek",7],["saucer","çay tabağı",7],
-["scattered","dağınık",7],["scheme","plan, tasarı",7],["scholarly","bilgili, bilimsel",7],
-["scholarship","burs; ilim",7],["school board","okul yönetimi",7],["scold","azarlamak",7],
-["scratch","tırmalamak, kazımak, kaşımak",7],["sealed","mühürlü",7],
-
-/* === SEVİYE 8 === */
-["seam","dikiş yeri; bağlantı yeri",8],["seek","araştırmak; bulmaya çalışmak",8],
-["seize","yakalamak; zaptetmek",8],["selfish","bencil",8],["sensitive","duyarlı",8],
-["serene","sakin; huzurlu",8],["severe","acı, sert, şiddetli",8],["shareholder","hissedar",8],
-["shattered","mahvolmuş; bitmiş",8],["shift","vardiya; yön değiştirmek",8],
-["shipping","gönderme, sipariş alıp gönderme",8],["shrewd","kurnaz, açıkgöz",8],
-["sinful","günahkâr",8],["skillful","becerikli",8],["sly","sinsi",8],
-["sneer","dudağını bükmek; küçümsemek",8],["soothe","sakinleştirmek, rahatlatmak",8],
-["sophisticated","karmaşık, girift",8],["spectacle","görülecek şey",8],["sphere","küre",8],
-["spokesperson","sözcü",8],["sporadic","düzensiz aralıklarla olan",8],
-["squeeze","sıkmak, ezmek",8],["steady","düzenli, sabit",8],["stem","-den ileri gelmek; kök",8],
-["stern","sert; müsamahasız",8],["stiff","katı, sert",8],["stingy","cimri, eli sıkı",8],
-["stockholder","hissedar",8],["straighten","doğrultmak",8],
-["strain","kendini zorlamak, gayret göstermek",8],["stray","başıboş; evsiz",8],
-["stretch","germek; esnetmek",8],["struggle","çabalamak, mücadele etmek",8],
-["stubborn","inatçı, dik başlı",8],["subsidize","para vermek, desteklemek",8],
-["subtle","narin, zekice",8],["sufficient","yeterli",8],["summary","özet",8],
-["superficial","yüzeysel, üstünkörü",8],["superior","daha üstün",8],
-["supplementary","takviye, ek",8],["surmount","üstesinden gelmek",8],
-["surpass","aşmak, üstün olmak",8],["surgeon","cerrah, operatör",8],
-["susceptible","kolay etkilenen, dayanıksız",8],["suspicion","şüphe, zan",8],
-["sustain","devam ettirmek, korumak",8],["swell","şişmek, kabarmak; artmak",8],
-["symptom","belirti, semptom",8],
-
-/* === SEVİYE 9 === */
-["synopsis","özet",9],["tackle","çaresine bakmak; üstesinden gelmek",9],
-["tempt","ayartmak",9],["testimony","tanıklık; ifade",9],
-["thorough","tam, dikkatli, eksiksiz",9],["thoughtful","düşünceli",9],
-["thrifty","tutumlu, idareli",9],["throng","kalabalık",9],["through","içinden, boyunca",9],
-["tilted","eğilmiş, meyil",9],["top","üst, zirve",9],["trace","iz, eser; izini sürmek",9],
-["trail","izlemek; sürüklemek",9],["tramped","kuvvetli adımla yürümek",9],
-["tranquil","sakin, huzurlu",9],["transaction","iş görme, işlem",9],["treachery","ihanet",9],
-["treatment","muamele, davranış; tedavi",9],["trial","deneme, duruşma",9],
-["triumph","zafer, başarı",9],["underestimate","azımsamak, küçümsemek",9],
-["underground","metro; yer altı",9],["undermine","baltalamak, çöktürmek",9],
-["underrate","hafife almak; küçümsemek",9],["unpleasant","nahoş, tatsız",9],
-["unrestrained","denetimsiz, serbest",9],["unwilling","istemeyerek, isteksiz",9],
-["unwillingness","isteksizlik",9],["vacant","boş, açık; dalgın",9],
-["vague","muğlak, belirsiz, şüpheli",9],["vanity","kibir, kendini beğenmişlik",9],
-["varied","değişik, çeşitli, değişken",9],["vast","çok geniş, engin",9],
-["versatile","çok yönlü, elinden birçok iş gelen",9],["vexed","canı sıkılmış, hiddetli",9],
-["violent","şiddetli, zorlu",9],["vital","hayati önemde",9],
-["voluntarily","gönüllü olarak",9],["vulnerable","saldırıya açık, maruz kalan",9],
-["wasteful","savurgan, müsrif",9],["withdraw","çekmek, çekilmek, ayrılmak",9],
-["wither","solmak; soldurmak",9],["wrinkle","buruşmak, kırışmak",9],
-["yield","kazanç, gelir; boyun eğmek",9],["zinnia","zenya çiçeği",9],
-["intrepid","korkusuz; cesur",9],["prolific","çok eser veren, üretken",9],
-["relent","yumuşama, merhamete gelme",9],["scorch","yakmak, kavurmak",9],
-["overemphatic","fazla vurgulu, çarpıcı",9],["overseas","deniz aşırı",9],
-["put off","elbisesini çıkartmak",9],
-
-/* === SEVİYE 10 === */
-["pride","gurur, iftihar",10],["of his own accord","kendi isteğiyle",10],
-["neglect","ihmal etmek",10],["nod","onaylamak, başını sallamak",10],
-["object","itiraz etmek",10],["pick up","toplama, devşirme",10],
-["restored","onarılmış, iyileşmiş",10],["stayed late","oyalanmak, geç kalmak",10],
-["step","adım, basamak",10],["unpardonable","affedilmez",10],
-["unrehearsed","provasız",10],["wise","akıllı, akıllıca, mantıklı",10],
-["humorous","komik, güldürücü",10],["huge","kocaman, büyük",10],["homeless","evsiz",10],
-["hoax","aldatıcı, oyun, hile",10],["highway","anayol",10],["hectic","telaşlı, hararetli",10],
-["hesitate","duraksamak",10],["hazardous","riskli, tehlikeli",10],["haven","sığınak, liman",10],
-["haste","acele, hız",10],["grumble","homurdanmak",10],["grievance","yakınma, şikâyet",10],
-["govern","idare etmek",10],["goods","mallar, eşya",10],["globe","dünya, küre",10],
-["gist","ana fikir",10],["giggle","kıkırdamak",10],["germinate","filizlenmek, çimlenmek",10],
-["gash","derin yara, yarık",10],["fume","pis kokulu gaz, duman",10],
-["futile","boşuna, beyhude",10],["frightened","korkmuş",10],
-["forestall","önlemek, önüne geçmek",10],["feeble","zayıf, güçsüz",10],
-["fatigue","bitkinlik, yorgunluk",10],["fabrication","uydurma, yalan",10],
-["exposure","maruz kalma, teşhir",10],["explicit","açık, net, sarih",10],
-["exotic","yabancı, alışılmadık",10],["excerpt","alıntı, parça",10],
-["distraught","perişan, kederli",10],["dismiss","görevden almak, kovmak",10],
-["dispense","dağıtmak, vermek",10],["disparage","küçümsemek, hor görmek",10],
-["discreet","ağzı sıkı, ihtiyatlı",10],["discord","anlaşmazlık, uyumsuzluk",10],
-["deplete","tüketmek, azaltmak",10],["deplore","üzülmek, kınamak",10]
+["pain","acı, sızı, ağrı",1],["trust","güvenmek",1],["gift","hediye; yetenek",1],["wheel","tekerlek",1],["mud","çamur",1],["monster","canavar",1],["vote","oy vermek",1],["short","kısa",1],["shout","bağırmak",1],["tower","kule",1],["seed","tohum",1],["shade","gölge",1],["edge","kenar",1],["rate","oran",1],["region","bölge",1],["respect","saygı, hürmet",1],["reward","ödül",1],["partner","ortak",1],["talent","yetenek",1],["tax","vergi",1],["doubt","şüphe, kuşku",1],["fool","aldatmak; kandırmak",1],["gain","kazanmak, elde etmek",1],["halt","durmak, mola",1],["item","madde; tane",1],["law","hukuk, kanun",1],["lane","dar yol; şerit",1],["pale","solgun",1],["poll","oylama; anket",1],["staff","personel",1],["statue","heykel",1],["tiny","küçük, ufacık",1],["torn","yırtık",1],["tunnel","altgeçit",1],["union","birlik; sendika",1],["unique","eşsiz; tek",1],["victim","kurban",1],["victory","zafer",1],["whip","kamçılamak",1],["witness","şahit",1],["sink","dibe batmak",1],["skip","atlamak",1],["slope","eğim",1],["smooth","yumuşak",1],["tear","yırtmak; gözyaşı",1],["weakness","zayıflık, zaaf",1],["wealthy","zengin, varlıklı",1],["percent","yüzde",1],["private","özel, şahsa ait",1],["opinion","fikir",1],
+["abandon","terk etmek, vazgeçmek",2],["accurate","kesin, doğru",2],["admire","hayran olmak, takdir etmek",2],["admit","itiraf etmek, kabul etmek",2],["alter","değiştirmek",2],["annual","yıllık",2],["approach","yaklaşım, tarz",2],["article","makale; madde; eşya",2],["benefit","fayda, yarar",2],["budget","bütçe",2],["capable","yetenekli, yetkili",2],["charge","ücret; harç; suçlama",2],["complete","tamamlamak, tamamen",2],["consider","düşünmek, göz önünde tutmak",2],["consume","tüketmek",2],["decline","azalmak, reddetmek",2],["delight","sevinç; zevk; haz",2],["detect","tespit etmek",2],["device","alet; aygıt",2],["divide","bölmek, ayırmak",2],["eager","istekli, hevesli",2],["employer","işveren",2],["essential","gerekli, temel",2],["expand","genişletmek",2],["explore","keşfetmek",2],["fabric","kumaş; doku",2],["fever","ateş; hararet",2],["float","yüzmek; su üstünde kalmak",2],["foggy","sisli",2],["govern","yönetmek, idare etmek",2],["ignore","aldırmamak, bilmezden gelmek",2],["initial","ilk; başlangıç",2],["intention","niyet",2],["issue","konu, yayın/baskı",2],["landscape","manzara",2],["personality","şahsiyet",2],["policy","politika, davranış biçimi",2],["predict","tahmin etmek",2],["prevent","engellemek, korumak",2],["previous","önceki, sabık",2],["proposal","önerme, niyet etme",2],["prospect","başarı şansı",2],["recover","iyileşmek, yeniden elde etmek",2],["remove","çıkarmak, temizlemek",2],["require","gerektirmek, istemek",2],["select","seçmek, ayırmak",2],["separate","ayırmak",2],["shelter","sığınak; korumak",2],["shield","kalkan; korumak",2],["survive","hayatta kalmak",2],
+["absolute","mutlak, tamamen",3],["abundant","bol, çok",3],["adequate","yeterli, uygun",3],["adjust","ayarlamak, uydurmak",3],["aggressive","saldırgan",3],["alliance","ittifak",3],["ally","müttefik",3],["anticipate","tahmin etmek, ona göre davranmak",3],["appreciate","takdir etmek",3],["argue","tartışmak, iddia etmek",3],["assess","değerlendirmek",3],["bias","önyargı",3],["conceal","gizlemek, saklamak",3],["confidence","güven, itimat",3],["confirm","teyit etmek; onaylamak",3],["congratulate","tebrik etmek",3],["consequence","sonuç",3],["conserve","korumak, muhafaza etmek",3],["controversial","tartışmalı",3],["crucial","çok önemli, kritik",3],["deadline","son teslim tarihi",3],["decade","on yıl",3],["deny","inkâr etmek, reddetmek",3],["desperate","çaresiz, umutsuz",3],["determine","belirlemek; tespit etmek",3],["distinguish","ayırt etmek",3],["efficient","verimli",3],["emerge","ortaya çıkmak",3],["emit","yaymak",3],["encourage","teşvik etmek",3],["enormous","çok büyük, muazzam",3],["ensure","sağlamak, güvenceye almak",3],["exposure","ifşa; korunmasızlık",3],["extensive","büyük, geniş kapsamlı",3],["faint","donuk; baygın",3],["flee","kaçmak; firar etmek",3],["fortunate","şanslı; talihli",3],["frank","açık sözlü; samimi",3],["harsh","sert, kaba, haşin",3],["hasten","acele etmek",3],["hesitate","tereddüt etmek",3],["indicate","belirtmek; göstergesi olmak",3],["intense","yoğun, şiddetli",3],["invest","yatırım yapmak; görevlendirmek",3],["notify","bildirmek, haber vermek",3],["punish","cezalandırmak",3],["reduce","azaltmak, indirmek",3],["reveal","açığa çıkarmak, ifşa etmek",3],["reject","reddetmek, geri çevirmek",3],["suggestion","öneri, telkin",3],
+["acknowledgement","onay, kabul etme",4],["acute","keskin; şiddetli",4],["ambiguous","birden fazla anlama gelebilen",4],["amend","düzeltmek, değiştirmek",4],["ample","yeterli, bol",4],["apparel","giyim, kıyafet",4],["appetite","iştah, arzu",4],["apprehension","korku, endişe, kavrayış",4],["approval","tasvip, onay, resmi izin",4],["brutality","vahşet, acımasızlık",4],["competent","yetenekli; yetkili",4],["complaint","şikâyet",4],["composed","birleşmiş; kendine hâkim",4],["compromise","uzlaşmak",4],["condense","yoğunlaştırmak; özetlemek",4],["confidential","gizli; sır",4],["confiscate","müsadere etmek; haczetmek",4],["conscientious","vicdanlı; dikkatli",4],["constraint","kısıtlama",4],["contempt","küçümseme, hor görme",4],["convince","ikna etmek",4],["deception","aldatma",4],["deceptive","aldatıcı",4],["dedicate","adamak",4],["defeat","yenmek; bozguna uğratmak",4],["deliberate","kasıtlı; dikkatli düşünülmüş",4],["delicate","nazik; hassas; narin",4],["deprive","mahrum bırakmak",4],["deteriorate","kötüleşmek",4],["diminish","azalmak, küçülmek",4],["disclose","açıklamak, ifşa etmek",4],["discriminate","ayırt etmek, ayrım yapmak",4],["ditch","hendek; ark; kanal",4],["divert","başka yöne çevirmek",4],["duplicate","kopyasını yapmak",4],["elevation","yükseltme; terfi",4],["embarrass","mahcup etmek",4],["exotic","alışılmadık, egzotik",4],["explicit","açık, belirgin",4],["exploit","sömürmek; fırsattan yararlanmak",4],["expose","ifşa etmek; maruz bırakmak",4],["feasible","yapılabilir; mümkün",4],["feeble","zayıf; kuvvetsiz",4],["flawless","kusursuz",4],["fluctuate","dalgalanmak; inip çıkmak",4],["grievance","şikâyet, yakınma",4],["hazardous","tehlikeli, zararlı",4],["hectic","heyecanlı; telaşlı",4],["hence","bundan dolayı",4],
+["abruptly","ani ve nezaketsiz biçimde",5],["absurd","saçma, gülünç",5],["affordable","uygun fiyatlı, hesaplı",5],["agreeable","razı; hoş; iyi",5],["brush up","tazelemek; gözden geçirmek",5],["concurrence","anlaşma; uyuşma",5],["deficient","yetersiz",5],["destitute","yoksul, muhtaç",5],["dismiss","işten çıkarmak; reddetmek",5],["disprove","yanlışlığını kanıtlamak",5],["divulge","ifşa etmek, açığa vurmak",5],["drowsy","uykulu",5],["dwindle","giderek azalmak",5],["embark","binmek, başlamak",5],["excerpt","alıntı, seçme parça",5],["exhibition","sergi, gösteri",5],["expel","kovmak, ihraç etmek",5],["exquisite","zarif, nefis",5],["fabrication","uydurma, imalat",5],["fatigue","yorgunluk; yormak",5],["fearsome","korkunç",5],["futile","boşuna, beyhude",5],["germinate","çimlenmek, çimlendirmek",5],["gist","ana fikir",5],["gleeful","neşe dolu",5],["globe","küre",5],["grumble","şikâyet etmek",5],["honour","onurlandırmak",5],["impartial","tarafsız",5],["imprecise","kesin olmayan, dikkatsiz",5],["impression","izlenim; etki",5],["impromptu","hazırlıksız; doğaçlama",5],["inactive","hareketsiz",5],["inadvertent","kasıtsız",5],["inconsiderate","düşüncesiz",5],["incredible","inanılmaz",5],["incurable","tedavi edilemez",5],["indecisive","kararsız",5],["indifferent","kayıtsız; umarsız",5],["indispensable","vazgeçilmez; zorunlu",5],["indistinct","belirsiz; bulanık",5],["induce","ikna etmek",5],["industrious","çalışkan; gayretli",5],["inflammable","kolay tutuşan; parlayıcı",5],["insignificant","değersiz; önemsiz",5],["insolent","küstah; terbiyesiz",5],["inspire","ilham vermek; teşvik etmek",5],["instructive","öğretici",5],["insult","hakaret etmek",5],["intensity","yoğunluk; güçlülük",5],
+["intermittent","aralıklı; kesik kesik",6],["intricate","karmaşık; girift",6],["investigator","araştırıcı; dedektif",6],["investment","yatırım",6],["irrelevant","konu dışı, ilgisiz",6],["irresponsible","sorumsuz",6],["liable","sorumlu; yükümlü",6],["negligent","ihmalkâr",6],["notorious","adı çıkmış, kötü şöhretli",6],["novelist","romancı",6],["objection","itiraz, sakınca",6],["obligation","mecburiyet",6],["obscured","gizli, saklı; anlaşılması güç",6],["obsess","aklına takılmak",6],["obstinate","inatçı, dik başlı",6],["occasion","fırsat; özel olay",6],["odorless","kokusuz",6],["outrage","öfke, hiddet; rezalet",6],["overdue","vadesi geçmiş, gecikmiş",6],["oversee","denetlemek",6],["oversimplify","aşırı basitleştirmek",6],["overturn","devirmek; tepetaklak etmek",6],["peculiarity","özellik, tuhaflık",6],["pessimistic","kötümser",6],["phony","sahte, düzmece",6],["plentiful","bol, bereketli",6],["plunge","dalma, fırlama",6],["poetic","şiirsel",6],["postpone","ertelemek",6],["praise","övmek",6],["precaution","tedbir, önlem",6],["precisely","tam olarak, kesinlikle",6],["prediction","tahmin",6],["premium","sigorta primi; ödül, prim",6],["presume","varsaymak",6],["pretend","rolüne girmek; bahane",6],["pretext","bahane",6],["preview","ilk gösterim",6],["prodigious","muazzam, kocaman",6],["profound","derin, bilgili; etkileyici",6],["promote","terfi ettirmek",6],["promotion","terfi",6],["punctual","dakik",6],["punctuality","dakiklik; zamanında olma",6],["purify","temizlemek, arındırmak",6],["pursue","peşine düşmek, takip etmek",6],["quarter","çeyrek; bölge, semt",6],["quartet","dörtlü",6],["raise","yukarı kaldırmak; artırmak",6],["readily","kolayca; seve seve",6],
+["recast","yeniden yapmak; değiştirmek",7],["recent","yakın zamanda olmuş",7],["recession","gerileme, durgunluk, azalma",7],["reckless","aldırışsız, kayıtsız",7],["reckon","hesaplamak; tahmin etmek",7],["recruit","üye yapmak, işe almak",7],["refrain","kendini tutmak, sakınmak",7],["refugee","mülteci",7],["refute","yalanlamak, çürütmek",7],["rejection","ret",7],["relentless","amansız; acımasız",7],["reliance","güven; itimat",7],["relief","ferahlama; kurtarma",7],["reluctant","isteksiz, tereddütlü",7],["reluctantly","gönülsüzce",7],["remark","söz söyleme; fark etme",7],["remarkable","dikkate değer",7],["renovation","yenileme, onarım",7],["represent","temsil etmek",7],["reprimand","azar; paylama",7],["reprove","azarlamak",7],["reputation","ün; itibar",7],["reservation","yer ayırtma; şart, ihtiyaç",7],["resign","istifa etmek",7],["resignation","istifa; kabullenme",7],["resonance","tınlama",7],["restraint","zaptetme; sınırlama",7],["restriction","sınırlama",7],["resultant","sonucunda ortaya çıkan",7],["revere","saymak; saygı göstermek",7],["revise","gözden geçirmek",7],["revive","yeniden canlanmak",7],["ridiculous","gülünç derecede saçma",7],["rim","kenar",7],["rival","rakip",7],["rot","çürüme",7],["rub","ovalamak",7],["rugged","zor, kaba, yontulmamış, pürüzlü",7],["rule out","elemek; reddetmek",7],["runaway","kaçak",7],["rush","aceleyle koşmak, hücum etmek",7],["saucer","çay tabağı",7],["scattered","dağınık",7],["scheme","plan, tasarı",7],["scholarly","bilgili, bilimsel",7],["scholarship","burs; ilim",7],["school board","okul yönetimi",7],["scold","azarlamak",7],["scratch","tırmalamak, kazımak, kaşımak",7],["sealed","mühürlü",7],
+["seam","dikiş yeri; bağlantı yeri",8],["seek","araştırmak; bulmaya çalışmak",8],["seize","yakalamak; zaptetmek",8],["selfish","bencil",8],["sensitive","duyarlı",8],["serene","sakin; huzurlu",8],["severe","acı, sert, şiddetli",8],["shareholder","hissedar",8],["shattered","mahvolmuş; bitmiş",8],["shift","vardiya; yön değiştirmek",8],["shipping","gönderme, sipariş alıp gönderme",8],["shrewd","kurnaz, açıkgöz",8],["sinful","günahkâr",8],["skillful","becerikli",8],["sly","sinsi",8],["sneer","dudağını bükmek; küçümsemek",8],["soothe","sakinleştirmek, rahatlatmak",8],["sophisticated","karmaşık, girift",8],["spectacle","görülecek şey",8],["sphere","küre",8],["spokesperson","sözcü",8],["sporadic","düzensiz aralıklarla olan",8],["squeeze","sıkmak, ezmek",8],["steady","düzenli, sabit",8],["stem","-den ileri gelmek; kök",8],["stern","sert; müsamahasız",8],["stiff","katı, sert",8],["stingy","cimri, eli sıkı",8],["stockholder","hissedar",8],["straighten","doğrultmak",8],["strain","kendini zorlamak, gayret göstermek",8],["stray","başıboş; evsiz",8],["stretch","germek; esnetmek",8],["struggle","çabalamak, mücadele etmek",8],["stubborn","inatçı, dik başlı",8],["subsidize","para vermek, desteklemek",8],["subtle","narin, zekice",8],["sufficient","yeterli",8],["summary","özet",8],["superficial","yüzeysel, üstünkörü",8],["superior","daha üstün",8],["supplementary","takviye, ek",8],["surmount","üstesinden gelmek",8],["surpass","aşmak, üstün olmak",8],["surgeon","cerrah, operatör",8],["susceptible","kolay etkilenen, dayanıksız",8],["suspicion","şüphe, zan",8],["sustain","devam ettirmek, korumak",8],["swell","şişmek, kabarmak; artmak",8],["symptom","belirti, semptom",8],
+["synopsis","özet",9],["tackle","çaresine bakmak; üstesinden gelmek",9],["tempt","ayartmak",9],["testimony","tanıklık; ifade",9],["thorough","tam, dikkatli, eksiksiz",9],["thoughtful","düşünceli",9],["thrifty","tutumlu, idareli",9],["throng","kalabalık",9],["through","içinden, boyunca",9],["tilted","eğilmiş, meyil",9],["top","üst, zirve",9],["trace","iz, eser; izini sürmek",9],["trail","izlemek; sürüklemek",9],["tramped","kuvvetli adımla yürümek",9],["tranquil","sakin, huzurlu",9],["transaction","iş görme, işlem",9],["treachery","ihanet",9],["treatment","muamele, davranış; tedavi",9],["trial","deneme, duruşma",9],["triumph","zafer, başarı",9],["underestimate","azımsamak, küçümsemek",9],["underground","metro; yer altı",9],["undermine","baltalamak, çöktürmek",9],["underrate","hafife almak; küçümsemek",9],["unpleasant","nahoş, tatsız",9],["unrestrained","denetimsiz, serbest",9],["unwilling","istemeyerek, isteksiz",9],["unwillingness","isteksizlik",9],["vacant","boş, açık; dalgın",9],["vague","muğlak, belirsiz, şüpheli",9],["vanity","kibir, kendini beğenmişlik",9],["varied","değişik, çeşitli, değişken",9],["vast","çok geniş, engin",9],["versatile","çok yönlü, elinden birçok iş gelen",9],["vexed","canı sıkılmış, hiddetli",9],["violent","şiddetli, zorlu",9],["vital","hayati önemde",9],["voluntarily","gönüllü olarak",9],["vulnerable","saldırıya açık, maruz kalan",9],["wasteful","savurgan, müsrif",9],["withdraw","çekmek, çekilmek, ayrılmak",9],["wither","solmak; soldurmak",9],["wrinkle","buruşmak, kırışmak",9],["yield","kazanç, gelir; boyun eğmek",9],["zinnia","zenya çiçeği",9],["intrepid","korkusuz; cesur",9],["prolific","çok eser veren, üretken",9],["relent","yumuşama, merhamete gelme",9],["scorch","yakmak, kavurmak",9],["overemphatic","fazla vurgulu, çarpıcı",9],["overseas","deniz aşırı",9],["put off","elbisesini çıkartmak",9],
+["pride","gurur, iftihar",10],["of his own accord","kendi isteğiyle",10],["neglect","ihmal etmek",10],["nod","onaylamak, başını sallamak",10],["object","itiraz etmek",10],["pick up","toplama, devşirme",10],["restored","onarılmış, iyileşmiş",10],["stayed late","oyalanmak, geç kalmak",10],["step","adım, basamak",10],["unpardonable","affedilmez",10],["unrehearsed","provasız",10],["wise","akıllı, akıllıca, mantıklı",10],["humorous","komik, güldürücü",10],["huge","kocaman, büyük",10],["homeless","evsiz",10],["hoax","aldatıcı, oyun, hile",10],["highway","anayol",10],["hectic","telaşlı, hararetli",10],["hesitate","duraksamak",10],["hazardous","riskli, tehlikeli",10],["haven","sığınak, liman",10],["haste","acele, hız",10],["grumble","homurdanmak",10],["grievance","yakınma, şikâyet",10],["govern","idare etmek",10],["goods","mallar, eşya",10],["globe","dünya, küre",10],["gist","ana fikir",10],["giggle","kıkırdamak",10],["germinate","filizlenmek, çimlenmek",10],["gash","derin yara, yarık",10],["fume","pis kokulu gaz, duman",10],["futile","boşuna, beyhude",10],["frightened","korkmuş",10],["forestall","önlemek, önüne geçmek",10],["feeble","zayıf, güçsüz",10],["fatigue","bitkinlik, yorgunluk",10],["fabrication","uydurma, yalan",10],["exposure","maruz kalma, teşhir",10],["explicit","açık, net, sarih",10],["exotic","yabancı, alışılmadık",10],["excerpt","alıntı, parça",10],["distraught","perişan, kederli",10],["dismiss","görevden almak, kovmak",10],["dispense","dağıtmak, vermek",10],["disparage","küçümsemek, hor görmek",10],["discreet","ağzı sıkı, ihtiyatlı",10],["discord","anlaşmazlık, uyumsuzluk",10],["deplete","tüketmek, azaltmak",10],["deplore","üzülmek, kınamak",10]
 ];
 
-/* ============================================================
-   CONTEXT — Örnek cümleler ve çağrışım ipuçları
-   Format: "kelime": {ex:"İngilizce cümle", tr:"Türkçe çeviri", hint:"çağrışım"}
-   ============================================================ */
+/* CONTEXT - kısa versiyon */
 const CONTEXT = {
-/* === SEVİYE 1 === */
-"pain":{ex:"He felt a sharp pain in his knee.",tr:"Dizinde keskin bir acı hissetti.",hint:"pain ≈ 'pen' (batma) → acı"},
-"trust":{ex:"I trust you completely.",tr:"Sana tamamen güveniyorum.",hint:"trust = güven → 'true' (doğru) + güvenilir"},
-"gift":{ex:"She gave me a gift for my birthday.",tr:"Doğum günüm için bana bir hediye verdi.",hint:"gift = hediye; aynı zamanda 'yetenek'"},
-"wheel":{ex:"The wheel was invented thousands of years ago.",tr:"Tekerlek binlerce yıl önce icat edildi.",hint:"wheel = teker → 'wheeling' = dönme"},
-"mud":{ex:"His shoes were covered in mud.",tr:"Ayakkabıları çamur içindeydi.",hint:"mud = çamur; muddy = çamurlu"},
-"monster":{ex:"A monster lived under the bridge.",tr:"Köprünün altında bir canavar yaşardı.",hint:"monster = canavar; monstrous = korkunç"},
-"vote":{ex:"I will vote for her in the election.",tr:"Seçimde ona oy vereceğim.",hint:"vote = oy → 'voting' = oylama"},
-"short":{ex:"He is short but very strong.",tr:"Kısa ama çok güçlü.",hint:"short = kısa; antonim: tall"},
-"shout":{ex:"Don't shout, I can hear you!",tr:"Bağırma, seni duyabiliyorum!",hint:"shout = bağır; antonim: whisper"},
-"tower":{ex:"The Eiffel Tower is very tall.",tr:"Eyfel Kulesi çok yüksek.",hint:"tower = kule; 'towering' = yükselen"},
-"seed":{ex:"Plant the seed in the soil.",tr:"Tohumu toprağa ek.",hint:"seed = tohum; 'seeding' = ekme"},
-"shade":{ex:"We sat in the shade of a tree.",tr:"Bir ağacın gölgesinde oturduk.",hint:"shade = gölge; shadow = gölge (kişi)"},
-"edge":{ex:"Don't stand near the edge!",tr:"Kenara yakın durma!",hint:"edge = kenar; 'edgy' = gergin"},
-"rate":{ex:"The rate of inflation is rising.",tr:"Enflasyon oranı yükseliyor.",hint:"rate = oran; 'rating' = değerlendirme"},
-"region":{ex:"This region is famous for its wine.",tr:"Bu bölge şarabıyla ünlüdür.",hint:"region = bölge; regional = bölgesel"},
-"respect":{ex:"We must respect our elders.",tr:"Büyüklerimize saygı göstermeliyiz.",hint:"respect = saygı; re+spect = yeniden bakmak"},
-"reward":{ex:"He got a reward for his honesty.",tr:"Dürüstlüğü için bir ödül aldı.",hint:"reward = ödül; antonim: punishment"},
-"partner":{ex:"She is my business partner.",tr:"O benim iş ortağım.",hint:"partner = ortak; part+ner = parça"},
-"talent":{ex:"She has a talent for singing.",tr:"Şarkı söyleme yeteneği var.",hint:"talent = yetenek; talented = yetenekli"},
-"tax":{ex:"Everyone must pay tax.",tr:"Herkes vergi ödemelidir.",hint:"tax = vergi; taxation = vergilendirme"},
-"doubt":{ex:"I doubt he will come.",tr:"Geleceğinden şüpheliyim.",hint:"doubt = şüphe; doubtful = şüpheli"},
-"fool":{ex:"Don't try to fool me!",tr:"Beni kandırmaya çalışma!",hint:"fool = kandır; foolish = aptalca"},
-"gain":{ex:"He gained a lot of experience.",tr:"Çok deneyim kazandı.",hint:"gain = kazan; antonim: lose"},
-"halt":{ex:"The train came to a halt.",tr:"Tren durdu.",hint:"halt = dur; 'halting' = duraksayan"},
-"item":{ex:"Each item on the list is important.",tr:"Listedeki her madde önemlidir.",hint:"item = madde; itemize = maddelemek"},
-"law":{ex:"Everyone must obey the law.",tr:"Herkes kanuna uymalıdır.",hint:"law = kanun; lawyer = avukat"},
-"lane":{ex:"Stay in your lane while driving.",tr:"Araba sürerken şeridinde kal.",hint:"lane = şerit; küçük yol"},
-"pale":{ex:"You look pale, are you sick?",tr:"Solgun görünüyorsun, hasta mısın?",hint:"pale = solgun; antonim: tan"},
-"poll":{ex:"The poll shows the president is popular.",tr:"Anket cumhurbaşkanının popüler olduğunu gösteriyor.",hint:"poll = anket; polling = oylama"},
-"staff":{ex:"The hotel staff were very kind.",tr:"Otel personeli çok kibardı.",hint:"staff = personel; 'staff member' = çalışan"},
-"statue":{ex:"There is a statue of Atatürk in the square.",tr:"Meydanda Atatürk'ün bir heykeli var.",hint:"statue = heykel; stature = boy (karıştırma!)"},
-"tiny":{ex:"A tiny bird sat on the branch.",tr:"Küçücük bir kuş dalda oturuyordu.",hint:"tiny = minik; antonim: huge"},
-"torn":{ex:"His shirt was torn after the fight.",tr:"Kavgadan sonra gömleği yırtılmıştı.",hint:"torn = yırtık; tear = yırtmak"},
-"tunnel":{ex:"The train goes through a long tunnel.",tr:"Tren uzun bir tünelden geçer.",hint:"tunnel = tünel; underground passage"},
-"union":{ex:"The workers formed a union.",tr:"İşçiler bir sendika kurdular.",hint:"union = birlik; unite = birleşmek"},
-"unique":{ex:"Her style is unique.",tr:"Onun tarzı eşsiz.",hint:"unique = tek; uni+que = tek olan"},
-"victim":{ex:"The victim was taken to hospital.",tr:"Kurban hastaneye götürüldü.",hint:"victim = kurban; victimize = kurban etmek"},
-"victory":{ex:"The team celebrated their victory.",tr:"Takım zaferlerini kutladı.",hint:"victory = zafer; victorious = muzaffer"},
-"whip":{ex:"The rider used a whip on the horse.",tr:"Sürücü at üzerinde kamçı kullandı.",hint:"whip = kamçı; whipped = çırpılmış"},
-"witness":{ex:"She was a witness to the accident.",tr:"Kazanın tanığıydı.",hint:"witness = şahit; wit+ness = bilen kişi"},
-"sink":{ex:"The ship began to sink.",tr:"Gemi batmaya başladı.",hint:"sink = batmak; antonim: float"},
-"skip":{ex:"I always skip breakfast.",tr:"Ben her zaman kahvaltıyı atlarım.",hint:"skip = atla; skipping = atlama"},
-"slope":{ex:"The slope was too steep to climb.",tr:"Yamaç tırmanamayacak kadar dikti.",hint:"slope = eğim; sloping = eğimli"},
-"smooth":{ex:"Her skin is very smooth.",tr:"Cildi çok yumuşak.",hint:"smooth = pürüzsüz; antonim: rough"},
-"tear":{ex:"Don't tear the paper!",tr:"Kağıdı yırtma! / A tear rolled down her cheek.",hint:"tear (tir) = yırtmak / tear (tiır) = gözyaşı"},
-"weakness":{ex:"Everyone has a weakness.",tr:"Herkesin bir zayıflığı vardır.",hint:"weak = zayıf → weakness = zayıflık"},
-"wealthy":{ex:"He is a wealthy businessman.",tr:"O zengin bir işadamı.",hint:"wealth = servet → wealthy = zengin"},
-"percent":{ex:"50 percent of students passed.",tr:"Öğrencilerin yüzde 50'si geçti.",hint:"per+cent = yüzde"},
-"private":{ex:"This is a private conversation.",tr:"Bu özel bir konuşma.",hint:"private = özel; antonim: public"},
-"opinion":{ex:"In my opinion, he is right.",tr:"Bence o haklı.",hint:"opinion = görüş; 'in my opinion' = bence"},
-
-/* === SEVİYE 2 === */
-"abandon":{ex:"They had to abandon the sinking ship.",tr:"Batan gemiyi terk etmek zorunda kaldılar.",hint:"a+band+on → grubu (band) bırakmak → terk etmek"},
-"accurate":{ex:"The weather forecast was not accurate.",tr:"Hava tahmini doğru değildi.",hint:"accurate ≈ 'akılda tut' → doğru bilgi"},
-"admire":{ex:"I admire her courage.",tr:"Onun cesaretine hayranım.",hint:"admire = hayran → 'admiration' = hayranlık"},
-"admit":{ex:"He admitted his mistake.",tr:"Hatasını kabul etti.",hint:"admit = itiraf; 'admission' = giriş/kabul"},
-"alter":{ex:"We had to alter our plans.",tr:"Planlarımızı değiştirmek zorunda kaldık.",hint:"alter = değiştir; 'alternative' = alternatif"},
-"annual":{ex:"The annual meeting is in May.",tr:"Yıllık toplantı Mayıs'ta.",hint:"annual = yıllık; anniversary = yıldönümü"},
-"approach":{ex:"We need a new approach to this problem.",tr:"Bu probleme yeni bir yaklaşıma ihtiyacımız var.",hint:"approach = yaklaşım; 'approachable' = ulaşılabilir"},
-"article":{ex:"I read an interesting article about AI.",tr:"Yapay zeka hakkında ilginç bir makale okudum.",hint:"article = makale/madde; 'articulate' = ifade etmek"},
-"benefit":{ex:"Exercise has many benefits.",tr:"Egzersizin birçok faydası vardır.",hint:"benefit = fayda; beneficial = faydalı"},
-"budget":{ex:"We have a limited budget.",tr:"Sınırlı bir bütçemiz var.",hint:"budget = bütçe; 'budgeting' = bütçeleme"},
-"capable":{ex:"She is capable of doing anything.",tr:"O her şeyi yapabilecek kapasitede.",hint:"capable = yetenekli; capability = kabiliyet"},
-"charge":{ex:"There is a small charge for delivery.",tr:"Teslimat için küçük bir ücret var.",hint:"charge = ücret/suçlama; 'in charge' = sorumlu"},
-"complete":{ex:"Please complete the form.",tr:"Lütfen formu tamamlayın.",hint:"complete = tamamla; completion = tamamlama"},
-"consider":{ex:"Please consider my offer.",tr:"Lütfen teklifimi düşün.",hint:"consider = düşün; considerable = hatırı sayılır"},
-"consume":{ex:"Cars consume a lot of fuel.",tr:"Arabalar çok yakıt tüketir.",hint:"consume = tüket; consumer = tüketici"},
-"decline":{ex:"Sales declined last year.",tr:"Geçen yıl satışlar azaldı.",hint:"decline = azal/reddet; 'declining' = azalan"},
-"delight":{ex:"The children were a delight to watch.",tr:"Çocukları izlemek bir zevkti.",hint:"delight = zevk; delighted = memnun"},
-"detect":{ex:"The police detected a strange smell.",tr:"Polis garip bir koku tespit etti.",hint:"detect = tespit; detective = dedektif"},
-"device":{ex:"This device measures temperature.",tr:"Bu cihaz sıcaklığı ölçer.",hint:"device = cihaz; 'devise' = tasarlamak"},
-"divide":{ex:"Divide the cake into eight pieces.",tr:"Pastayı sekiz parçaya böl.",hint:"divide = böl; division = bölüm"},
-"eager":{ex:"He was eager to start his new job.",tr:"Yeni işine başlamak için istekliydi.",hint:"eager = istekli; eagerly = hevesle"},
-"employer":{ex:"My employer gave me a raise.",tr:"İşverenim bana zam yaptı.",hint:"employer = işveren; employee = çalışan"},
-"essential":{ex:"Water is essential for life.",tr:"Su yaşam için gereklidir.",hint:"essential = temel; essence = öz"},
-"expand":{ex:"The company plans to expand overseas.",tr:"Şirket yurt dışına genişlemeyi planlıyor.",hint:"expand = genişlet; antonim: contract"},
-"explore":{ex:"They explored the cave.",tr:"Mağarayı keşfettiler.",hint:"explore = keşfet; explorer = kâşif"},
-"fabric":{ex:"This fabric is very soft.",tr:"Bu kumaş çok yumuşak.",hint:"fabric = kumaş/doku; 'fabricate' = uydurmak"},
-"fever":{ex:"He has a high fever.",tr:"Yüksek ateşi var.",hint:"fever = ateş; feverish = ateşli"},
-"float":{ex:"Wood floats on water.",tr:"Tahta suda yüzer.",hint:"float = yüz; antonim: sink"},
-"foggy":{ex:"It was a foggy morning.",tr:"Sisli bir sabahtı.",hint:"fog = sis → foggy = sisli"},
-"govern":{ex:"The king governed wisely.",tr:"Kral bilgece yönetti.",hint:"govern = yönet; government = hükümet"},
-"ignore":{ex:"Don't ignore your health.",tr:"Sağlığını ihmal etme.",hint:"ignore = görmezden gel; ignorance = cehalet"},
-"initial":{ex:"My initial reaction was surprise.",tr:"İlk tepkim şaşkınlıktı.",hint:"initial = ilk; initiate = başlatmak"},
-"intention":{ex:"I have no intention of leaving.",tr:"Ayrılmaya hiç niyetim yok.",hint:"intention = niyet; intend = niyet etmek"},
-"issue":{ex:"Climate change is a global issue.",tr:"İklim değişikliği küresel bir sorun.",hint:"issue = konu/sayı; 'issuing' = yayınlama"},
-"landscape":{ex:"The landscape was beautiful.",tr:"Manzara güzeldi.",hint:"land+scape = arazi görünümü"},
-"personality":{ex:"She has a strong personality.",tr:"Güçlü bir kişiliği var.",hint:"person+ality = kişilik"},
-"policy":{ex:"The company has a strict policy.",tr:"Şirketin katı bir politikası var.",hint:"policy = politika; political = siyasi"},
-"predict":{ex:"It's hard to predict the future.",tr:"Geleceği tahmin etmek zor.",hint:"pre+dict = önceden söylemek → tahmin"},
-"prevent":{ex:"Vaccines prevent diseases.",tr:"Aşılar hastalıkları önler.",hint:"pre+vent = önüne geç → engelle"},
-"previous":{ex:"I met him the previous day.",tr:"Onunla önceki gün tanıştım.",hint:"previous = önceki; 'previously' = daha önce"},
-"proposal":{ex:"She accepted his marriage proposal.",tr:"Evlilik teklifini kabul etti.",hint:"propose = önermek → proposal = öneri"},
-"prospect":{ex:"There is little prospect of success.",tr:"Başarı şansı az.",hint:"prospect = ihtimal; prospective = olası"},
-"recover":{ex:"He recovered from his illness.",tr:"Hastalığından iyileşti.",hint:"re+cover = tekrar örtmek → iyileşmek"},
-"remove":{ex:"Please remove your shoes.",tr:"Lütfen ayakkabılarını çıkar.",hint:"remove = çıkar; removal = çıkarma"},
-"require":{ex:"This job requires experience.",tr:"Bu iş deneyim gerektirir.",hint:"require = gerektir; requirement = gereklilik"},
-"select":{ex:"Select the correct answer.",tr:"Doğru cevabı seç.",hint:"select = seç; selection = seçim"},
-"separate":{ex:"They sleep in separate rooms.",tr:"Ayrı odalarda uyuyorlar.",hint:"separate = ayır; separation = ayrılık"},
-"shelter":{ex:"We took shelter from the rain.",tr:"Yağmurdan korunmak için sığındık.",hint:"shelter = sığınak; 'sheltered' = korunaklı"},
-"shield":{ex:"The knight held his shield.",tr:"Şövalye kalkanını tuttu.",hint:"shield = kalkan/koru"},
-"survive":{ex:"Only few people survived.",tr:"Sadece az kişi hayatta kaldı.",hint:"sur+vive = üstünde yaşamak → hayatta kal"},
-
-/* === SEVİYE 3 === */
-"absolute":{ex:"I have absolute trust in her.",tr:"Ona mutlak güvenim var.",hint:"absolute = mutlak; 'absolutely' = kesinlikle"},
-"abundant":{ex:"The region has abundant rainfall.",tr:"Bölge bol yağış alıyor.",hint:"abundant = bol; abundance = bolluk"},
-"adequate":{ex:"The food was adequate for everyone.",tr:"Yemek herkes için yeterliydi.",hint:"adequate = yeterli; antonim: deficient"},
-"adjust":{ex:"You can adjust the seat height.",tr:"Koltuk yüksekliğini ayarlayabilirsin.",hint:"adjust = ayarla; adjustment = ayar"},
-"aggressive":{ex:"He becomes aggressive when drunk.",tr:"Sarhoşken saldırganlaşır.",hint:"aggressive = saldırgan; aggression = saldırganlık"},
-"alliance":{ex:"The two countries formed an alliance.",tr:"İki ülke ittifak kurdu.",hint:"alliance = ittifak; ally = müttefik"},
-"ally":{ex:"England was an ally of France.",tr:"İngiltere Fransa'nın müttefikiydi.",hint:"ally = müttefik; alliance = ittifak"},
-"anticipate":{ex:"We anticipate a busy season.",tr:"Yoğun bir sezon bekliyoruz.",hint:"anti+cipate = önceden almak → beklemek"},
-"appreciate":{ex:"I really appreciate your help.",tr:"Yardımını gerçekten takdir ediyorum.",hint:"appreciate = takdir; appreciation = takdir"},
-"argue":{ex:"They argued about money.",tr:"Para konusunda tartıştılar.",hint:"argue = tartış; argument = argüman"},
-"assess":{ex:"Teachers assess student progress.",tr:"Öğretmenler öğrenci ilerlemesini değerlendirir.",hint:"assess = değerlendir; assessment = değerlendirme"},
-"bias":{ex:"The report shows a clear bias.",tr:"Rapor açık bir önyargı gösteriyor.",hint:"bias = önyargı; biased = taraflı"},
-"conceal":{ex:"She concealed her true feelings.",tr:"Gerçek duygularını sakladı.",hint:"conceal = sakla; antonim: reveal"},
-"confidence":{ex:"He spoke with great confidence.",tr:"Büyük bir güvenle konuştu.",hint:"confidence = güven; confident = kendinden emin"},
-"confirm":{ex:"Please confirm your reservation.",tr:"Lütfen rezervasyonunuzu onaylayın.",hint:"confirm = onayla; confirmation = onay"},
+"abandon":{ex:"They had to abandon the sinking ship.",tr:"Batan gemiyi terk etmek zorunda kaldılar.",hint:"a+band+on → grubu bırakmak → terk etmek"},
+"accurate":{ex:"The weather forecast was not accurate.",tr:"Hava tahmini doğru değildi.",hint:"accurate = doğru bilgi"},
+"abundant":{ex:"The region has abundant rainfall.",tr:"Bölge bol yağış alıyor.",hint:"abundance = bolluk"},
+"acknowledgement":{ex:"I received an acknowledgement letter.",tr:"Bir onay mektubu aldım.",hint:"acknowledge = kabul etmek"},
+"acute":{ex:"He has acute hearing.",tr:"Keskin bir işitmesi var.",hint:"acute = keskin/şiddetli"},
+"adequate":{ex:"The food was adequate for everyone.",tr:"Yemek herkes için yeterliydi.",hint:"adequate = yeterli"},
+"adjust":{ex:"You can adjust the seat height.",tr:"Koltuk yüksekliğini ayarlayabilirsin.",hint:"adjust = ayarla"},
+"admire":{ex:"I admire her courage.",tr:"Onun cesaretine hayranım.",hint:"admiration = hayranlık"},
+"admit":{ex:"He admitted his mistake.",tr:"Hatasını kabul etti.",hint:"admission = giriş/kabul"},
+"aggressive":{ex:"He becomes aggressive when drunk.",tr:"Sarhoşken saldırganlaşır.",hint:"aggression = saldırganlık"},
+"alliance":{ex:"The two countries formed an alliance.",tr:"İki ülke ittifak kurdu.",hint:"ally = müttefik"},
+"alter":{ex:"We had to alter our plans.",tr:"Planlarımızı değiştirmek zorunda kaldık.",hint:"alternative = alternatif"},
+"ambiguous":{ex:"His answer was ambiguous.",tr:"Cevabı belirsizdi.",hint:"ambi = iki + anlamlı → çift anlamlı"},
+"amend":{ex:"They amended the contract.",tr:"Sözleşmeyi değiştirdiler.",hint:"amendment = değişiklik"},
+"anticipate":{ex:"We anticipate a busy season.",tr:"Yoğun bir sezon bekliyoruz.",hint:"anti+cipate = önceden almak"},
+"appreciate":{ex:"I really appreciate your help.",tr:"Yardımını gerçekten takdir ediyorum.",hint:"appreciation = takdir"},
+"apprehension":{ex:"She felt apprehension before the exam.",tr:"Sınavdan önce endişe hissetti.",hint:"apprehend = kavramak/korkmak"},
+"argue":{ex:"They argued about money.",tr:"Para konusunda tartıştılar.",hint:"argument = argüman"},
+"assess":{ex:"Teachers assess student progress.",tr:"Öğretmenler öğrenci ilerlemesini değerlendirir.",hint:"assessment = değerlendirme"},
+"bias":{ex:"The report shows a clear bias.",tr:"Rapor açık bir önyargı gösteriyor.",hint:"biased = taraflı"},
+"conceal":{ex:"She concealed her true feelings.",tr:"Gerçek duygularını sakladı.",hint:"antonim: reveal"},
+"confidence":{ex:"He spoke with great confidence.",tr:"Büyük bir güvenle konuştu.",hint:"confident = kendinden emin"},
+"confirm":{ex:"Please confirm your reservation.",tr:"Lütfen rezervasyonunuzu onaylayın.",hint:"confirmation = onay"},
 "congratulate":{ex:"I congratulated him on his success.",tr:"Onu başarısından dolayı tebrik ettim.",hint:"con+gratulate = birlikte sevinmek"},
 "consequence":{ex:"Actions have consequences.",tr:"Eylemlerin sonuçları vardır.",hint:"con+sequence = sonuç"},
-"conserve":{ex:"We must conserve water.",tr:"Suyu korumalıyız.",hint:"conserve = koru; conservation = koruma"},
+"conserve":{ex:"We must conserve water.",tr:"Suyu korumalıyız.",hint:"conservation = koruma"},
 "controversial":{ex:"This is a controversial topic.",tr:"Bu tartışmalı bir konu.",hint:"controversy = tartışma"},
-"crucial":{ex:"This decision is crucial.",tr:"Bu karar çok önemli.",hint:"crucial = kritik; 'crux' = öz"},
+"convince":{ex:"He convinced me to join.",tr:"Beni katılmaya ikna etti.",hint:"convincing = ikna edici"},
+"crucial":{ex:"This decision is crucial.",tr:"Bu karar çok önemli.",hint:"crux = öz"},
 "deadline":{ex:"The deadline is tomorrow.",tr:"Son teslim tarihi yarın.",hint:"dead+line = ölü çizgi → son tarih"},
-"decade":{ex:"He worked there for a decade.",tr:"Orada on yıl çalıştı.",hint:"dec+ade = on yıl (deca = 10)"},
-"deny":{ex:"He denied stealing the money.",tr:"Parayı çaldığını inkâr etti.",hint:"deny = inkâr; denial = inkâr"},
-"desperate":{ex:"She was desperate for help.",tr:"Yardım için çaresizdi.",hint:"desperate = çaresiz; desperation = çaresizlik"},
-"determine":{ex:"We must determine the cause.",tr:"Nedeni belirlemeliyiz.",hint:"determine = belirle; determination = kararlılık"},
+"decade":{ex:"He worked there for a decade.",tr:"Orada on yıl çalıştı.",hint:"deca = 10"},
+"decline":{ex:"Sales declined last year.",tr:"Geçen yıl satışlar azaldı.",hint:"declining = azalan"},
+"dedicate":{ex:"He dedicated his life to science.",tr:"Hayatını bilime adadı.",hint:"dedication = adanma"},
+"defeat":{ex:"They defeated the enemy.",tr:"Düşmanı yendiler.",hint:"antonim: victory"},
+"deliberate":{ex:"It was a deliberate mistake.",tr:"Bu kasıtlı bir hataydı.",hint:"antonim: accidental"},
+"delicate":{ex:"Handle with care, it's delicate.",tr:"Dikkatli tut, narin.",hint:"antonim: sturdy"},
+"deny":{ex:"He denied stealing the money.",tr:"Parayı çaldığını inkâr etti.",hint:"denial = inkâr"},
+"deprive":{ex:"He was deprived of sleep.",tr:"Uykudan mahrum kaldı.",hint:"deprivation = yoksunluk"},
+"desperate":{ex:"She was desperate for help.",tr:"Yardım için çaresizdi.",hint:"desperation = çaresizlik"},
+"deteriorate":{ex:"His health deteriorated rapidly.",tr:"Sağlığı hızla kötüleşti.",hint:"antonim: improve"},
+"determine":{ex:"We must determine the cause.",tr:"Nedeni belirlemeliyiz.",hint:"determination = kararlılık"},
+"diminish":{ex:"Interest in the topic diminished.",tr:"Konuya ilgi azaldı.",hint:"antonim: increase"},
+"disclose":{ex:"He refused to disclose his sources.",tr:"Kaynaklarını açıklamayı reddetti.",hint:"disclosure = açıklama"},
+"discriminate":{ex:"It's illegal to discriminate by race.",tr:"Irka göre ayrım yapmak yasa dışıdır.",hint:"discrimination = ayrımcılık"},
 "distinguish":{ex:"Can you distinguish the twins?",tr:"İkizleri ayırt edebiliyor musun?",hint:"dis+tinguish = ayırt et"},
-"efficient":{ex:"She is a very efficient worker.",tr:"O çok verimli bir çalışan.",hint:"efficient = verimli; efficiency = verimlilik"},
-"emerge":{ex:"The sun emerged from the clouds.",tr:"Güneş bulutlardan çıktı.",hint:"emerge = ortaya çık; emergence = ortaya çıkış"},
-"emit":{ex:"The car emits harmful gases.",tr:"Araba zararlı gaz yayar.",hint:"emit = yay; emission = salım"},
+"divert":{ex:"Traffic was diverted to another road.",tr:"Trafik başka bir yola yönlendirildi.",hint:"diversion = sapma"},
+"efficient":{ex:"She is a very efficient worker.",tr:"O çok verimli bir çalışan.",hint:"efficiency = verimlilik"},
+"emerge":{ex:"The sun emerged from the clouds.",tr:"Güneş bulutlardan çıktı.",hint:"emergence = ortaya çıkış"},
 "encourage":{ex:"My parents encouraged me.",tr:"Ailem beni teşvik etti.",hint:"en+courage = cesaret vermek"},
-"enormous":{ex:"The elephant is enormous.",tr:"Fil çok büyük.",hint:"enormous = devasa; antonim: tiny"},
-"ensure":{ex:"Please ensure the door is locked.",tr:"Lütfen kapının kilitli olduğundan emin ol.",hint:"ensure = garanti et; assurance = güvence"},
-"exposure":{ex:"Long exposure to sun is harmful.",tr:"Uzun süre güneşe maruz kalmak zararlı.",hint:"expose = maruz bırak → exposure"},
-"extensive":{ex:"He has extensive knowledge.",tr:"Kapsamlı bilgisi var.",hint:"extensive = geniş; antonim: limited"},
+"enormous":{ex:"The elephant is enormous.",tr:"Fil çok büyük.",hint:"antonim: tiny"},
+"ensure":{ex:"Please ensure the door is locked.",tr:"Lütfen kapının kilitli olduğundan emin ol.",hint:"assurance = güvence"},
+"exposure":{ex:"Long exposure to sun is harmful.",tr:"Uzun süre güneşe maruz kalmak zararlı.",hint:"expose = maruz bırakmak"},
 "faint":{ex:"She felt faint in the heat.",tr:"Sıcakta baygınlık hissetti.",hint:"faint = baygın/soluk"},
-"flee":{ex:"They fled from the war.",tr:"Savaştan kaçtılar.",hint:"flee = kaç; 'fled' geçmiş zaman"},
-"fortunate":{ex:"You are fortunate to have such friends.",tr:"Böyle arkadaşlara sahip olduğun için şanslısın.",hint:"fortunate = şanslı; fortune = servet/kader"},
-"frank":{ex:"To be frank, I don't like it.",tr:"Açık konuşmak gerekirse, sevmedim.",hint:"frank = açık sözlü; Frank (isim)"},
-"harsh":{ex:"The winter was very harsh.",tr:"Kış çok sertti.",hint:"harsh = sert; antonim: gentle"},
-"hasten":{ex:"She hastened to catch the train.",tr:"Treni yakalamak için acele etti.",hint:"haste = acele → hasten"},
-"hesitate":{ex:"Don't hesitate to ask questions.",tr:"Soru sormaktan çekinme.",hint:"hesitate = tereddüt; hesitation = tereddüt"},
-"indicate":{ex:"The sign indicates the way.",tr:"Tabela yolu gösteriyor.",hint:"indicate = belirt; indication = belirti"},
-"intense":{ex:"The pain was intense.",tr:"Acı yoğundu.",hint:"intense = yoğun; intensity = yoğunluk"},
-"invest":{ex:"He invested in real estate.",tr:"Gayrimenkule yatırım yaptı.",hint:"invest = yatırım yap; investment = yatırım"},
-"notify":{ex:"Please notify me when you arrive.",tr:"Vardığında bana haber ver.",hint:"notify = bildir; notification = bildirim"},
-"punish":{ex:"The teacher punished the students.",tr:"Öğretmen öğrencileri cezalandırdı.",hint:"punish = cezalandır; punishment = ceza"},
-"reduce":{ex:"We need to reduce costs.",tr:"Maliyetleri düşürmeliyiz.",hint:"reduce = azalt; reduction = azaltma"},
-"reveal":{ex:"The truth was finally revealed.",tr:"Gerçek sonunda ortaya çıktı.",hint:"reveal = açığa çıkar; antonim: conceal"},
-"reject":{ex:"They rejected his application.",tr:"Başvurusunu reddettiler.",hint:"reject = reddet; rejection = ret"},
-"suggestion":{ex:"Thanks for your suggestion.",tr:"Önerin için teşekkürler.",hint:"suggest = önermek → suggestion"},
-
-/* === SEVİYE 4 === */
-"acknowledgement":{ex:"I received an acknowledgement letter.",tr:"Bir onay mektubu aldım.",hint:"acknowledge = kabul etmek → acknowledgement"},
-"acute":{ex:"He has acute hearing.",tr:"Keskin bir işitmesi var.",hint:"acute = keskin/şiddetli; antonim: chronic"},
-"ambiguous":{ex:"His answer was ambiguous.",tr:"Cevabı belirsizdi.",hint:"ambi = iki + guous = anlamlı → çift anlamlı"},
-"amend":{ex:"They amended the contract.",tr:"Sözleşmeyi değiştirdiler.",hint:"amend = düzelt; amendment = değişiklik"},
-"ample":{ex:"We have ample time.",tr:"Bol zamanımız var.",hint:"ample = bol; antonim: scarce"},
-"apparel":{ex:"The store sells sports apparel.",tr:"Mağaza spor kıyafetleri satıyor.",hint:"apparel = kıyafet (formal)"},
-"appetite":{ex:"I have a big appetite today.",tr:"Bugün iştahım açık.",hint:"appetite = iştah; appetizer = başlangıç"},
-"apprehension":{ex:"She felt apprehension before the exam.",tr:"Sınavdan önce endişe hissetti.",hint:"apprehend = kavramak/korkmak"},
-"approval":{ex:"The plan needs approval.",tr:"Planın onaya ihtiyacı var.",hint:"approve = onaylamak → approval"},
-"brutality":{ex:"The brutality of the attack shocked everyone.",tr:"Saldırının vahşeti herkesi şok etti.",hint:"brutal = vahşi → brutality"},
-"competent":{ex:"She is a competent manager.",tr:"O yetenekli bir yönetici.",hint:"competent = yetkin; antonim: incompetent"},
-"complaint":{ex:"I have a complaint about the service.",tr:"Hizmetle ilgili bir şikâyetim var.",hint:"complain = şikâyet etmek → complaint"},
-"composed":{ex:"She stayed composed during the crisis.",tr:"Kriz sırasında soğukkanlı kaldı.",hint:"compose = oluşturmak/sakinleşmek"},
-"compromise":{ex:"Both sides made a compromise.",tr:"Her iki taraf da uzlaşma yaptı.",hint:"com+promise = birlikte söz vermek"},
-"condense":{ex:"Please condense the report.",tr:"Lütfen raporu özetle.",hint:"condense = yoğunlaştır; antonim: expand"},
-"confidential":{ex:"This is confidential information.",tr:"Bu gizli bilgi.",hint:"confide = güvenmek → confidential"},
-"confiscate":{ex:"The police confiscated his car.",tr:"Polis arabasına el koydu.",hint:"confiscate = müsadere etmek"},
-"conscientious":{ex:"She is a conscientious worker.",tr:"O vicdanlı bir çalışan.",hint:"conscience = vicdan"},
-"constraint":{ex:"Time constraints limited our work.",tr:"Zaman kısıtlamaları işimizi sınırladı.",hint:"constrain = kısıtlamak"},
-"contempt":{ex:"He looked at me with contempt.",tr:"Bana küçümsemeyle baktı.",hint:"contempt = hor görme; antonim: respect"},
-"convince":{ex:"He convinced me to join.",tr:"Beni katılmaya ikna etti.",hint:"convince = ikna et; convincing = ikna edici"},
-"deception":{ex:"The whole thing was a deception.",tr:"Her şey bir aldatmacaydı.",hint:"deceive = aldatmak → deception"},
-"deceptive":{ex:"Appearances can be deceptive.",tr:"Görünüşler aldatıcı olabilir.",hint:"deceptive = aldatıcı"},
-"dedicate":{ex:"He dedicated his life to science.",tr:"Hayatını bilime adadı.",hint:"dedicate = ada; dedication = adanma"},
-"defeat":{ex:"They defeated the enemy.",tr:"Düşmanı yendiler.",hint:"defeat = yenmek; antonim: victory"},
-"deliberate":{ex:"It was a deliberate mistake.",tr:"Bu kasıtlı bir hataydı.",hint:"deliberate = kasıtlı; antonim: accidental"},
-"delicate":{ex:"Handle with care, it's delicate.",tr:"Dikkatli tut, narin.",hint:"delicate = narin; antonim: sturdy"},
-"deprive":{ex:"He was deprived of sleep.",tr:"Uykudan mahrum kaldı.",hint:"deprive = mahrum bırak; deprivation = yoksunluk"},
-"deteriorate":{ex:"His health deteriorated rapidly.",tr:"Sağlığı hızla kötüleşti.",hint:"deteriorate = kötüleş; antonim: improve"},
-"diminish":{ex:"Interest in the topic diminished.",tr:"Konuya ilgi azaldı.",hint:"diminish = azal; antonim: increase"},
-"disclose":{ex:"He refused to disclose his sources.",tr:"Kaynaklarını açıklamayı reddetti.",hint:"disclose = açıkla; disclosure = açıklama"},
-"discriminate":{ex:"It's illegal to discriminate by race.",tr:"Irka göre ayrım yapmak yasa dışıdır.",hint:"discriminate = ayrım yap"},
-"ditch":{ex:"The car fell into a ditch.",tr:"Araba bir hendeğe düştü.",hint:"ditch = hendek; 'ditch someone' = birini bırakmak"},
-"divert":{ex:"Traffic was diverted to another road.",tr:"Trafik başka bir yola yönlendirildi.",hint:"divert = yön değiştir; diversion = sapma"},
-"duplicate":{ex:"Please duplicate this file.",tr:"Lütfen bu dosyayı çoğalt.",hint:"duplicate = kopya; dupli = iki"},
-"elevation":{ex:"The elevation is 2000 meters.",tr:"Yükseklik 2000 metre.",hint:"elevate = yükseltmek → elevation"},
-"embarrass":{ex:"Don't embarrass me in public.",tr:"Beni toplum içinde mahcup etme.",hint:"embarrass = utandırmak"},
-"exotic":{ex:"We saw exotic animals at the zoo.",tr:"Hayvanat bahçesinde egzotik hayvanlar gördük.",hint:"exotic = egzotik; exo = dış"},
-"explicit":{ex:"The instructions were explicit.",tr:"Talimatlar açıktı.",hint:"explicit = açık; antonim: implicit"},
-"exploit":{ex:"The company exploits its workers.",tr:"Şirket işçilerini sömürüyor.",hint:"exploit = sömür/faydalan"},
-"expose":{ex:"The scandal was exposed by journalists.",tr:"Skandal gazeteciler tarafından ortaya çıkarıldı.",hint:"expose = maruz bırak/açığa çıkar"},
-"feasible":{ex:"The plan is not feasible.",tr:"Plan uygulanabilir değil.",hint:"feasible = mümkün; antonim: impossible"},
-"feeble":{ex:"He gave a feeble excuse.",tr:"Zayıf bir bahane verdi.",hint:"feeble = zayıf; antonim: strong"},
-"flawless":{ex:"Her performance was flawless.",tr:"Performansı kusursuzdu.",hint:"flaw = kusur → flawless = kusursuz"},
-"fluctuate":{ex:"Prices fluctuate daily.",tr:"Fiyatlar günlük dalgalanıyor.",hint:"fluctuate = dalgalan; fluctuation = dalgalanma"},
-"grievance":{ex:"He filed a grievance against his boss.",tr:"Patronuna karşı bir şikâyet dilekçesi verdi.",hint:"grieve = üzülmek → grievance"},
-"hazardous":{ex:"Smoking is hazardous to health.",tr:"Sigara sağlığa zararlıdır.",hint:"hazard = tehlike → hazardous"},
-"hectic":{ex:"It was a hectic day at work.",tr:"İşte telaşlı bir gündü.",hint:"hectic = telaşlı; 'hectic schedule' = yoğun program"},
-"hence":{ex:"It's raining, hence we stay home.",tr:"Yağmur yağıyor, bu yüzden evde kalıyoruz.",hint:"hence = bundan dolayı; antonim: thus"},
-
-/* === SEVİYE 5 === */
-"abruptly":{ex:"He left the meeting abruptly.",tr:"Toplantıdan aniden ayrıldı.",hint:"abrupt = ani → abruptly"},
-"absurd":{ex:"That's an absurd idea.",tr:"Bu saçma bir fikir.",hint:"absurd = absürt; absurdity = saçmalık"},
-"affordable":{ex:"We need affordable housing.",tr:"Uygun fiyatlı konuta ihtiyacımız var.",hint:"afford = karşılayabilmek → affordable"},
-"agreeable":{ex:"She has an agreeable personality.",tr:"Hoş bir kişiliği var.",hint:"agree = anlaşmak → agreeable = hoş"},
-"brush up":{ex:"I need to brush up my French.",tr:"Fransızcamı tazelemem gerekiyor.",hint:"brush up = tazelemek (beceri)"},
-"concurrence":{ex:"The concurrence of events was strange.",tr:"Olayların aynı anda olması garipti.",hint:"concur = aynı fikirde olmak"},
-"deficient":{ex:"His diet is deficient in vitamins.",tr:"Diyeti vitamin açısından yetersiz.",hint:"deficient = eksik; antonim: sufficient"},
-"destitute":{ex:"The war left many people destitute.",tr:"Savaş birçok insanı yoksul bıraktı.",hint:"destitute = yoksul; antonim: wealthy"},
-"dismiss":{ex:"The manager dismissed him.",tr:"Müdür onu işten çıkardı.",hint:"dismiss = kov/reddet; dismissal = işten çıkarma"},
-"disprove":{ex:"Science can disprove old theories.",tr:"Bilim eski teorileri çürütebilir.",hint:"dis+prove = yanlışlığını kanıtla"},
-"divulge":{ex:"He refused to divulge the secret.",tr:"Sırrı ifşa etmeyi reddetti.",hint:"divulge = ifşa et; antonim: conceal"},
-"drowsy":{ex:"The medicine made me drowsy.",tr:"İlaç beni uykulu yaptı.",hint:"drowsy = uykulu; 'drowsiness' = uyuşukluk"},
-"dwindle":{ex:"Their savings dwindled quickly.",tr:"Birikimleri hızla azaldı.",hint:"dwindle = giderek azal; antonim: grow"},
-"embark":{ex:"They embarked on a new journey.",tr:"Yeni bir yolculuğa çıktılar.",hint:"embark = başla/bin; 'embark on' = girişmek"},
-"excerpt":{ex:"I read an excerpt from the book.",tr:"Kitaptan bir alıntı okudum.",hint:"excerpt = alıntı; 'excerpt from'"},
-"exhibition":{ex:"We visited an art exhibition.",tr:"Bir sanat sergisini ziyaret ettik.",hint:"exhibit = sergilemek → exhibition"},
-"expel":{ex:"The student was expelled from school.",tr:"Öğrenci okuldan atıldı.",hint:"expel = kov; expulsion = ihraç"},
-"exquisite":{ex:"She wore an exquisite dress.",tr:"Zarif bir elbise giydi.",hint:"exquisite = zarif/nefis; antonim: ugly"},
-"fabrication":{ex:"The story was a complete fabrication.",tr:"Hikâye tamamen uydurmaydı.",hint:"fabricate = uydurmak → fabrication"},
-"fatigue":{ex:"He suffered from fatigue.",tr:"Yorgunluktan muzdaripti.",hint:"fatigue = yorgunluk; 'chronic fatigue' = kronik yorgunluk"},
-"fearsome":{ex:"The dragon was fearsome.",tr:"Ejderha korkunçtu.",hint:"fear = korku → fearsome"},
-"futile":{ex:"All their efforts were futile.",tr:"Tüm çabaları boşunaydı.",hint:"futile = boşuna; antonim: useful"},
-"germinate":{ex:"Seeds germinate in spring.",tr:"Tohumlar ilkbaharda çimlenir.",hint:"germ = mikrop → germinate = çimlenmek"},
-"gist":{ex:"I got the gist of the article.",tr:"Makalenin ana fikrini anladım.",hint:"gist = ana fikir"},
-"gleeful":{ex:"The children were gleeful.",tr:"Çocuklar neşe doluydu.",hint:"glee = neşe → gleeful"},
-"globe":{ex:"People from all over the globe came.",tr:"Dünyanın her yerinden insanlar geldi.",hint:"globe = küre/dünya; global = küresel"},
-"grumble":{ex:"He grumbled about the weather.",tr:"Hava hakkında homurdandı.",hint:"grumble = homurdan"},
-"honour":{ex:"We honour our heroes.",tr:"Kahramanlarımızı onurlandırırız.",hint:"honour = onur; honorable = onurlu"},
-"impartial":{ex:"A judge must be impartial.",tr:"Bir hâkim tarafsız olmalıdır.",hint:"im+partial = tarafsız; antonim: biased"},
-"imprecise":{ex:"His instructions were imprecise.",tr:"Talimatları belirsizdi.",hint:"im+precise = kesin olmayan"},
-"impression":{ex:"First impressions are important.",tr:"İlk izlenimler önemlidir.",hint:"impress = etkilemek → impression"},
-"impromptu":{ex:"He gave an impromptu speech.",tr:"Hazırlıksız bir konuşma yaptı.",hint:"impromptu = doğaçlama"},
-"inactive":{ex:"The volcano is inactive.",tr:"Yanardağ aktif değil.",hint:"in+active = hareketsiz"},
-"inadvertent":{ex:"It was an inadvertent error.",tr:"Bu kasıtsız bir hataydı.",hint:"in+advertent = dikkatsiz → kasıtsız"},
-"inconsiderate":{ex:"It was inconsiderate of you to be late.",tr:"Geç kalman düşüncesizlikti.",hint:"in+considerate = düşüncesiz"},
-"incredible":{ex:"The view was incredible.",tr:"Manzara inanılmazdı.",hint:"in+credible = inanılmaz; antonim: believable"},
-"incurable":{ex:"The disease was incurable.",tr:"Hastalık tedavi edilemezdi.",hint:"in+cure+able = tedavi edilemez"},
-"indecisive":{ex:"He is indecisive about everything.",tr:"O her konuda kararsız.",hint:"in+decisive = kararsız"},
-"indifferent":{ex:"She was indifferent to his pleas.",tr:"Yakarışlarına kayıtsız kaldı.",hint:"in+different = fark etmeyen → kayıtsız"},
-"indispensable":{ex:"Smartphones are indispensable now.",tr:"Akıllı telefonlar artık vazgeçilmez.",hint:"in+dispensable = vazgeçilmez"},
-"indistinct":{ex:"The shape was indistinct.",tr:"Şekil belirsizdi.",hint:"in+distinct = belirsiz"},
-"induce":{ex:"Nothing could induce him to change.",tr:"Hiçbir şey onu değiştirmeye ikna edemezdi.",hint:"induce = ikna et; antonim: deter"},
-"industrious":{ex:"She is an industrious student.",tr:"O çalışkan bir öğrenci.",hint:"industry = endüstri/çalışkanlık → industrious"},
-"inflammable":{ex:"Gasoline is highly inflammable.",tr:"Benzin kolay tutuşur.",hint:"in+flame+able = kolay tutuşan"},
-"insignificant":{ex:"It was an insignificant detail.",tr:"Önemsiz bir detaydı.",hint:"in+significant = önemsiz"},
-"insolent":{ex:"The insolent boy was punished.",tr:"Küstah çocuk cezalandırıldı.",hint:"insolent = küstah; antonim: polite"},
-"inspire":{ex:"His story inspired millions.",tr:"Hikâyesi milyonlara ilham verdi.",hint:"inspire = ilham ver; inspiration = ilham"},
-"instructive":{ex:"The lecture was very instructive.",tr:"Ders çok öğreticiydi.",hint:"instruct = öğretmek → instructive"},
-"insult":{ex:"He insulted his colleague.",tr:"Meslektaşına hakaret etti.",hint:"insult = hakaret; antonim: compliment"},
-"intensity":{ex:"The intensity of the storm increased.",tr:"Fırtınanın şiddeti arttı.",hint:"intense = yoğun → intensity"},
-
-/* === SEVİYE 6 === */
-"intermittent":{ex:"There was intermittent rain all day.",tr:"Bütün gün aralıklı yağmur vardı.",hint:"inter+mittent = aralıklı"},
-"intricate":{ex:"The design is very intricate.",tr:"Tasarım çok karmaşık.",hint:"intricate = girift; antonim: simple"},
-"investigator":{ex:"The investigator examined the scene.",tr:"Araştırmacı olay yerini inceledi.",hint:"investigate = araştırmak"},
-"investment":{ex:"Real estate is a good investment.",tr:"Gayrimenkul iyi bir yatırımdır.",hint:"invest = yatırım yapmak"},
-"irrelevant":{ex:"Your comment is irrelevant.",tr:"Yorumun konu dışı.",hint:"ir+relevant = ilgisiz; antonim: relevant"},
-"irresponsible":{ex:"It was irresponsible of him to leave.",tr:"Onun gitmesi sorumsuzluktu.",hint:"ir+responsible = sorumsuz"},
-"liable":{ex:"You are liable for the damage.",tr:"Hasar için sorumlusun.",hint:"liable = yükümlü; liability = yükümlülük"},
-"negligent":{ex:"He was negligent in his duties.",tr:"Görevlerinde ihmalkârdı.",hint:"neglect = ihmal → negligent"},
-"notorious":{ex:"He is notorious for his crimes.",tr:"Suçlarıyla ünlü (kötü şöhretli).",hint:"notorious = kötü şöhretli"},
-"novelist":{ex:"She is a famous novelist.",tr:"Ünlü bir romancı.",hint:"novel = roman → novelist"},
-"objection":{ex:"I have no objection to the plan.",tr:"Plana itirazım yok.",hint:"object = karşı çıkmak → objection"},
-"obligation":{ex:"You have an obligation to pay.",tr:"Ödeme yükümlülüğün var.",hint:"oblige = mecbur etmek → obligation"},
-"obscured":{ex:"The view was obscured by fog.",tr:"Manzara sisle kapanmıştı.",hint:"obscure = gizlemek → obscured"},
-"obsess":{ex:"He is obsessed with football.",tr:"Futbola takıntılı.",hint:"obsess = takıntı yap; obsession = takıntı"},
-"obstinate":{ex:"He is too obstinate to listen.",tr:"Dinlemeyecek kadar inatçı.",hint:"obstinate = inatçı; antonim: flexible"},
-"occasion":{ex:"It's a special occasion.",tr:"Özel bir olay/fırsat.",hint:"occasion = fırsat; occasional = ara sıra"},
-"odorless":{ex:"The gas is colorless and odorless.",tr:"Gaz renksiz ve kokusuz.",hint:"odor = koku → odorless"},
-"outrage":{ex:"The decision caused public outrage.",tr:"Karar kamu öfkesine yol açtı.",hint:"outrage = öfke; outrageous = çirkin"},
-"overdue":{ex:"The library book is overdue.",tr:"Kütüphane kitabı gecikmiş.",hint:"over+due = vadesi geçmiş"},
-"oversee":{ex:"She oversees the whole project.",tr:"Tüm projeyi denetliyor.",hint:"over+see = yukarıdan bakmak → denetlemek"},
-"oversimplify":{ex:"Don't oversimplify the issue.",tr:"Sorunu aşırı basitleştirme.",hint:"over+simplify = fazla basitleştir"},
-"overturn":{ex:"The court overturned the decision.",tr:"Mahkeme kararı bozdu.",hint:"over+turn = devirmek/iptal etmek"},
-"peculiarity":{ex:"Each culture has its peculiarities.",tr:"Her kültürün kendine has özellikleri vardır.",hint:"peculiar = tuhaf → peculiarity"},
-"pessimistic":{ex:"He is pessimistic about the future.",tr:"Gelecek hakkında kötümser.",hint:"pessimist = kötümser; antonim: optimistic"},
-"phony":{ex:"His smile was phony.",tr:"Gülümsemesi sahteydi.",hint:"phony = sahte; 'phony call' = sahte arama"},
-"plentiful":{ex:"Food was plentiful at the feast.",tr:"Ziyafette yemek boldu.",hint:"plenty = bol → plentiful"},
-"plunge":{ex:"He plunged into the cold water.",tr:"Soğuk suya daldı.",hint:"plunge = dalmak; 'plunging' = hızla düşen"},
-"poetic":{ex:"Her words were poetic.",tr:"Sözleri şiirseldi.",hint:"poem = şiir → poetic"},
-"postpone":{ex:"The meeting was postponed.",tr:"Toplantı ertelendi.",hint:"post+pose = sonraya koymak"},
-"praise":{ex:"The teacher praised her work.",tr:"Öğretmen onun çalışmasını övdü.",hint:"praise = övmek; antonim: criticize"},
+"flee":{ex:"They fled from the war.",tr:"Savaştan kaçtılar.",hint:"fled = geçmiş zaman"},
+"fortunate":{ex:"You are fortunate to have such friends.",tr:"Böyle arkadaşlara sahip olduğun için şanslısın.",hint:"fortune = servet/kader"},
+"frank":{ex:"To be frank, I don't like it.",tr:"Açık konuşmak gerekirse, sevmedim.",hint:"frank = açık sözlü"},
+"harsh":{ex:"The winter was very harsh.",tr:"Kış çok sertti.",hint:"antonim: gentle"},
+"hasten":{ex:"She hastened to catch the train.",tr:"Treni yakalamak için acele etti.",hint:"haste = acele"},
+"hence":{ex:"It's raining, hence we stay home.",tr:"Yağmur yağıyor, bu yüzden evde kalıyoruz.",hint:"hence = bundan dolayı"},
+"hesitate":{ex:"Don't hesitate to ask questions.",tr:"Soru sormaktan çekinme.",hint:"hesitation = tereddüt"},
+"ignore":{ex:"Don't ignore your health.",tr:"Sağlığını ihmal etme.",hint:"ignorance = cehalet"},
+"indicate":{ex:"The sign indicates the way.",tr:"Tabela yolu gösteriyor.",hint:"indication = belirti"},
+"initial":{ex:"My initial reaction was surprise.",tr:"İlk tepkim şaşkınlıktı.",hint:"initiate = başlatmak"},
+"intense":{ex:"The pain was intense.",tr:"Acı yoğundu.",hint:"intensity = yoğunluk"},
+"intention":{ex:"I have no intention of leaving.",tr:"Ayrılmaya hiç niyetim yok.",hint:"intend = niyet etmek"},
+"invest":{ex:"He invested in real estate.",tr:"Gayrimenkule yatırım yaptı.",hint:"investment = yatırım"},
+"notify":{ex:"Please notify me when you arrive.",tr:"Vardığında bana haber ver.",hint:"notification = bildirim"},
+"objection":{ex:"I have no objection to the plan.",tr:"Plana itirazım yok.",hint:"object = karşı çıkmak"},
+"obligation":{ex:"You have an obligation to pay.",tr:"Ödeme yükümlülüğün var.",hint:"oblige = mecbur etmek"},
+"obstinate":{ex:"He is too obstinate to listen.",tr:"Dinlemeyecek kadar inatçı.",hint:"antonim: flexible"},
+"occasion":{ex:"It's a special occasion.",tr:"Özel bir olay/fırsat.",hint:"occasional = ara sıra"},
+"praise":{ex:"The teacher praised her work.",tr:"Öğretmen onun çalışmasını övdü.",hint:"antonim: criticize"},
 "precaution":{ex:"Take precautions against fire.",tr:"Yangına karşı önlem al.",hint:"pre+caution = ön tedbir"},
-"precisely":{ex:"That's precisely what I meant.",tr:"Tam olarak demek istediğim bu.",hint:"precise = kesin → precisely"},
-"prediction":{ex:"His prediction came true.",tr:"Tahmini gerçekleşti.",hint:"predict = tahmin etmek"},
-"premium":{ex:"The premium is too expensive.",tr:"Sigorta primi çok pahalı.",hint:"premium = prim/ödül"},
-"presume":{ex:"I presume you're hungry.",tr:"Sanırım açsın.",hint:"presume = varsaymak; antonim: know"},
-"pretend":{ex:"He pretended to be asleep.",tr:"Uyuyormuş gibi yaptı.",hint:"pretend = -mış gibi yapmak"},
-"pretext":{ex:"He left on the pretext of illness.",tr:"Hastalık bahanesiyle ayrıldı.",hint:"pretext = bahane; pretext for"},
-"preview":{ex:"We saw a preview of the film.",tr:"Filmin bir ön gösterimini gördük.",hint:"pre+view = önceden görmek"},
-"prodigious":{ex:"He has a prodigious memory.",tr:"Muazzam bir hafızası var.",hint:"prodigious = kocaman; antonim: tiny"},
-"profound":{ex:"She made a profound impact.",tr:"Derin bir etki bıraktı.",hint:"profound = derin; antonim: superficial"},
-"promote":{ex:"He was promoted to manager.",tr:"Müdürlüğe terfi ettirildi.",hint:"promote = terfi ettir; promotion = terfi"},
-"promotion":{ex:"She got a promotion last month.",tr:"Geçen ay terfi aldı.",hint:"promote = terfi ettirmek"},
-"punctual":{ex:"She is always punctual.",tr:"O her zaman dakiktir.",hint:"punctual = dakik; punctuality = dakiklik"},
-"punctuality":{ex:"Punctuality is important in business.",tr:"İşte dakiklik önemlidir.",hint:"punctual = dakik"},
-"purify":{ex:"This device purifies the air.",tr:"Bu cihaz havayı temizler.",hint:"pure = saf → purify"},
-"pursue":{ex:"She decided to pursue a career in law.",tr:"Hukuk kariyerini takip etmeye karar verdi.",hint:"pursue = peşine düşmek"},
-"quarter":{ex:"We waited for a quarter of an hour.",tr:"Çeyrek saat bekledik.",hint:"quarter = çeyrek; quarterly = üç aylık"},
-"quartet":{ex:"The quartet played beautifully.",tr:"Dörtlü güzel çaldı.",hint:"quart=4 → quartet = dört kişilik grup"},
-"raise":{ex:"Raise your hand if you know.",tr:"Biliyorsan elini kaldır.",hint:"raise = kaldır; antonim: lower"},
-"readily":{ex:"He readily agreed to help.",tr:"Yardım etmeye hemen razı oldu.",hint:"ready = hazır → readily = kolayca"},
-
-/* === SEVİYE 7 === */
-"recast":{ex:"The play was recast with new actors.",tr:"Oyun yeni oyuncularla yeniden düzenlendi.",hint:"re+cast = yeniden şekillendirmek"},
-"recent":{ex:"Recent studies show this.",tr:"Son çalışmalar bunu gösteriyor.",hint:"recent = yakın zamanda; recently = son zamanlarda"},
-"recession":{ex:"The country fell into recession.",tr:"Ülke durgunluğa girdi.",hint:"recess = geri çekilme → recession = ekonomik durgunluk"},
-"reckless":{ex:"Reckless driving is dangerous.",tr:"Dikkatsiz araba sürmek tehlikelidir.",hint:"reckless = aldırışsız; antonim: careful"},
-"reckon":{ex:"I reckon it will rain.",tr:"Sanırım yağmur yağacak.",hint:"reckon = hesaplamak/saymak"},
-"recruit":{ex:"The company is recruiting engineers.",tr:"Şirket mühendis alıyor.",hint:"recruit = işe almak; recruitment = işe alım"},
-"refrain":{ex:"Please refrain from smoking.",tr:"Lütfen sigara içmekten kaçının.",hint:"refrain = kendini tutmak; 'refrain from'"},
-"refugee":{ex:"The refugees need help.",tr:"Mültecilerin yardıma ihtiyacı var.",hint:"refuge = sığınak → refugee = mülteci"},
-"refute":{ex:"He refuted all the accusations.",tr:"Tüm suçlamaları çürüttü.",hint:"refute = çürütmek; antonim: confirm"},
-"rejection":{ex:"The rejection letter arrived today.",tr:"Ret mektubu bugün geldi.",hint:"reject = reddetmek"},
-"relentless":{ex:"His relentless pursuit paid off.",tr:"Amansız takibi meyvesini verdi.",hint:"relent = yumuşamak → relentless = amansız"},
-"reliance":{ex:"Our reliance on technology grows.",tr:"Teknolojiye bağımlılığımız artıyor.",hint:"rely = güvenmek → reliance"},
-"relief":{ex:"It was a great relief to hear the news.",tr:"Haberi duymak büyük bir rahatlamaydı.",hint:"relieve = rahatlatmak → relief"},
-"reluctant":{ex:"She was reluctant to leave.",tr:"Ayrılmaya isteksizdi.",hint:"reluctant = isteksiz; antonim: willing"},
-"reluctantly":{ex:"He reluctantly agreed.",tr:"İsteksizce kabul etti.",hint:"reluctant = isteksiz"},
-"remark":{ex:"He made a rude remark.",tr:"Kaba bir söz söyledi.",hint:"remark = söz/fark etmek; remarkable = dikkat çekici"},
-"remarkable":{ex:"She has a remarkable talent.",tr:"Dikkat çekici bir yeteneği var.",hint:"re+markable = dikkate değer"},
-"renovation":{ex:"The house needs renovation.",tr:"Evin yenilenmeye ihtiyacı var.",hint:"renovate = yenilemek"},
-"represent":{ex:"She represents our company.",tr:"Şirketimizi temsil ediyor.",hint:"represent = temsil etmek; representative = temsilci"},
-"reprimand":{ex:"The boss reprimanded him.",tr:"Patron onu azarladı.",hint:"reprimand = azarlamak"},
-"reprove":{ex:"The teacher reproved the students.",tr:"Öğretmen öğrencileri azarladı.",hint:"reprove = azarlamak; antonim: praise"},
-"reputation":{ex:"He has a good reputation.",tr:"İyi bir itibarı var.",hint:"repute = saymak → reputation"},
-"reservation":{ex:"I made a hotel reservation.",tr:"Otel rezervasyonu yaptım.",hint:"reserve = ayırmak → reservation"},
-"resign":{ex:"He resigned from his job.",tr:"İşinden istifa etti.",hint:"resign = istifa etmek; resignation = istifa"},
-"resignation":{ex:"Her resignation surprised everyone.",tr:"İstifası herkesi şaşırttı.",hint:"resign = istifa etmek"},
-"resonance":{ex:"The room has good resonance.",tr:"Odanın akustiği iyi.",hint:"resonate = yankılanmak"},
-"restraint":{ex:"He showed great restraint.",tr:"Büyük bir özdenetim gösterdi.",hint:"restrain = tutmak → restraint = sınırlama"},
-"restriction":{ex:"There are travel restrictions.",tr:"Seyahat kısıtlamaları var.",hint:"restrict = kısıtlamak"},
-"resultant":{ex:"The resultant damage was huge.",tr:"Ortaya çıkan hasar büyüktü.",hint:"result = sonuç → resultant = sonucunda oluşan"},
-"revere":{ex:"The students revere their teacher.",tr:"Öğrenciler öğretmenlerine saygı duyar.",hint:"revere = saygı duymak; antonim: despise"},
-"revise":{ex:"I need to revise for the exam.",tr:"Sınava çalışmam (gözden geçirmem) gerekiyor.",hint:"revise = gözden geçirmek; revision = tekrar"},
-"revive":{ex:"The old tradition was revived.",tr:"Eski gelenek yeniden canlandırıldı.",hint:"re+vive = tekrar yaşamak → canlanmak"},
-"ridiculous":{ex:"That's a ridiculous idea.",tr:"Bu gülünç bir fikir.",hint:"ridicule = alay etmek → ridiculous"},
-"rim":{ex:"He sat on the rim of the fountain.",tr:"Çeşmenin kenarına oturdu.",hint:"rim = kenar; 'rim of a glass'"},
-"rival":{ex:"The two are rivals for the prize.",tr:"İkisi ödül için rakip.",hint:"rival = rakip; rivalry = rekabet"},
-"rot":{ex:"The fruit began to rot.",tr:"Meyve çürümeye başladı.",hint:"rot = çürüme; rotten = çürük"},
-"rub":{ex:"She rubbed her eyes.",tr:"Gözlerini ovdu.",hint:"rub = ovmak; rubber = silgi/lastik"},
-"rugged":{ex:"The rugged terrain was hard to cross.",tr:"Engebeli arazi geçmek zordu.",hint:"rugged = pürüzlü/sert; antonim: smooth"},
-"rule out":{ex:"We can't rule out that possibility.",tr:"O olasılığı göz ardı edemeyiz.",hint:"rule out = elemek/dışlamak"},
-"runaway":{ex:"The runaway horse was caught.",tr:"Kaçak at yakalandı.",hint:"run+away = kaçak"},
-"rush":{ex:"Don't rush, we have time.",tr:"Acele etme, zamanımız var.",hint:"rush = acele etmek"},
-"saucer":{ex:"Put the cup on the saucer.",tr:"Fincanı çay tabağına koy.",hint:"sauce = sos → saucer = tabak (benzer)"},
-"scattered":{ex:"Books were scattered on the floor.",tr:"Kitaplar yere dağılmıştı.",hint:"scatter = dağıtmak → scattered"},
-"scheme":{ex:"They devised a clever scheme.",tr:"Zekice bir plan kurdular.",hint:"scheme = plan/tasarı"},
-"scholarly":{ex:"He wrote a scholarly article.",tr:"Bilimsel bir makale yazdı.",hint:"scholar = bilgin → scholarly"},
-"scholarship":{ex:"She won a full scholarship.",tr:"Tam burs kazandı.",hint:"scholar = bilgin → scholarship = burs"},
-"school board":{ex:"The school board met yesterday.",tr:"Okul yönetimi dün toplandı.",hint:"school+board = okul yönetimi"},
-"scold":{ex:"Mother scolded the child.",tr:"Anne çocuğu azarladı.",hint:"scold = azarlamak; antonim: praise"},
-"scratch":{ex:"The cat scratched my arm.",tr:"Kedi kolumu tırmaladı.",hint:"scratch = tırmalamak/kaşımak"},
-"sealed":{ex:"The letter was sealed.",tr:"Mektup mühürlenmişti.",hint:"seal = mühürlemek → sealed"},
-
-/* === SEVİYE 8 === */
-"seam":{ex:"The seam of the shirt was torn.",tr:"Gömleğin dikişi yırtılmıştı.",hint:"seam = dikiş yeri; seamless = pürüzsüz"},
-"seek":{ex:"He is seeking a new job.",tr:"Yeni bir iş arıyor.",hint:"seek = aramak; 'seeking'"},
-"seize":{ex:"He seized the opportunity.",tr:"Fırsatı yakaladı.",hint:"seize = yakalamak/el koymak"},
-"selfish":{ex:"Don't be so selfish!",tr:"Bu kadar bencil olma!",hint:"self = kendi → selfish = bencil; antonim: selfless"},
-"sensitive":{ex:"She is sensitive to criticism.",tr:"Eleştiriye karşı hassas.",hint:"sense = hissetmek → sensitive"},
-"serene":{ex:"The lake was serene.",tr:"Göl sakin ve huzurluydu.",hint:"serene = sakin; antonim: chaotic"},
-"severe":{ex:"He suffered severe pain.",tr:"Şiddetli acı çekti.",hint:"severe = şiddetli; antonim: mild"},
-"shareholder":{ex:"The shareholders met today.",tr:"Hissedarlar bugün toplandı.",hint:"share+holder = hisse sahibi"},
-"shattered":{ex:"He was shattered by the news.",tr:"Haberle yıkıldı.",hint:"shatter = paramparça etmek"},
-"shift":{ex:"He works the night shift.",tr:"Gece vardiyasında çalışıyor.",hint:"shift = vardiya/değişim"},
-"shipping":{ex:"Shipping costs have increased.",tr:"Kargo masrafları arttı.",hint:"ship = gemi/göndermek → shipping"},
-"shrewd":{ex:"She is a shrewd businesswoman.",tr:"O kurnaz bir iş kadını.",hint:"shrewd = kurnaz; antonim: naive"},
-"sinful":{ex:"He admitted his sinful behavior.",tr:"Günahkâr davranışını kabul etti.",hint:"sin = günah → sinful"},
-"skillful":{ex:"He is a skillful surgeon.",tr:"O becerikli bir cerrah.",hint:"skill = beceri → skillful"},
-"sly":{ex:"The sly fox stole the chicken.",tr:"Sinsi tilki tavuğu çaldı.",hint:"sly = sinsi; antonim: honest"},
-"sneer":{ex:"He sneered at my idea.",tr:"Fikrimle alay etti.",hint:"sneer = alaycı gülümseme"},
-"soothe":{ex:"The music soothed her.",tr:"Müzik onu sakinleştirdi.",hint:"soothe = yatıştırmak; antonim: agitate"},
-"sophisticated":{ex:"This is a sophisticated system.",tr:"Bu karmaşık bir sistem.",hint:"sophisticated = gelişmiş/karmaşık"},
-"spectacle":{ex:"The fireworks were a spectacle.",tr:"Havai fişekler bir gösteriydi.",hint:"spectacle = gösteri; spectacular = muhteşem"},
-"sphere":{ex:"The Earth is a sphere.",tr:"Dünya bir küredir.",hint:"sphere = küre; spherical = küresel"},
-"spokesperson":{ex:"The spokesperson gave a statement.",tr:"Sözcü bir açıklama yaptı.",hint:"spokes+person = sözcü"},
-"sporadic":{ex:"Sporadic fighting continued.",tr:"Aralıklı çatışmalar sürdü.",hint:"sporadic = düzensiz aralıklı; antonim: regular"},
-"squeeze":{ex:"Squeeze the lemon into the glass.",tr:"Limoni bardağa sık.",hint:"squeeze = sıkmak"},
-"steady":{ex:"He has a steady job.",tr:"Sabit bir işi var.",hint:"steady = düzenli/sabit; antonim: unstable"},
-"stem":{ex:"The problem stems from poor planning.",tr:"Sorun kötü planlamadan kaynaklanıyor.",hint:"stem = kök/kaynaklanmak"},
-"stern":{ex:"The teacher gave a stern look.",tr:"Öğretmen sert bir bakış attı.",hint:"stern = sert/ciddi; antonim: lenient"},
-"stiff":{ex:"My neck is stiff.",tr:"Boynum tutulmuş (katı).",hint:"stiff = katı; antonim: flexible"},
-"stingy":{ex:"Don't be so stingy!",tr:"Bu kadar cimri olma!",hint:"stingy = cimri; antonim: generous"},
-"stockholder":{ex:"The stockholders voted on the merger.",tr:"Hissedarlar birleşme için oy kullandı.",hint:"stock+holder = hisse sahibi"},
-"straighten":{ex:"Straighten your back!",tr:"Sırtını doğrult!",hint:"straight = düz → straighten"},
-"strain":{ex:"The rope couldn't take the strain.",tr:"Halat bu gerginliği kaldıramadı.",hint:"strain = zorlanma/gerginlik"},
-"stray":{ex:"A stray cat came to our door.",tr:"Başıboş bir kedi kapımıza geldi.",hint:"stray = başıboş/sapmak"},
-"stretch":{ex:"Stretch before exercising.",tr:"Egzersizden önce gerin.",hint:"stretch = germek/uzatmak"},
-"struggle":{ex:"They struggled to survive.",tr:"Hayatta kalmak için savaştılar.",hint:"struggle = mücadele"},
-"stubborn":{ex:"He is too stubborn to apologize.",tr:"Özür dilemeyecek kadar inatçı.",hint:"stubborn = inatçı; antonim: flexible"},
+"predict":{ex:"It's hard to predict the future.",tr:"Geleceği tahmin etmek zor.",hint:"prediction = tahmin"},
+"prevent":{ex:"Vaccines prevent diseases.",tr:"Aşılar hastalıkları önler.",hint:"prevention = önleme"},
+"previous":{ex:"I met him the previous day.",tr:"Onunla önceki gün tanıştım.",hint:"previously = daha önce"},
+"prospect":{ex:"There is little prospect of success.",tr:"Başarı şansı az.",hint:"prospective = olası"},
+"recover":{ex:"He recovered from his illness.",tr:"Hastalığından iyileşti.",hint:"re+cover = tekrar iyileşmek"},
+"reduce":{ex:"We need to reduce costs.",tr:"Maliyetleri düşürmeliyiz.",hint:"reduction = azaltma"},
+"reject":{ex:"They rejected his application.",tr:"Başvurusunu reddettiler.",hint:"rejection = ret"},
+"reveal":{ex:"The truth was finally revealed.",tr:"Gerçek sonunda ortaya çıktı.",hint:"antonim: conceal"},
+"ridiculous":{ex:"That's a ridiculous idea.",tr:"Bu gülünç bir fikir.",hint:"ridicule = alay etmek"},
+"selfish":{ex:"Don't be so selfish!",tr:"Bu kadar bencil olma!",hint:"antonim: selfless"},
+"sensitive":{ex:"She is sensitive to criticism.",tr:"Eleştiriye karşı hassas.",hint:"sense = hissetmek"},
+"severe":{ex:"He suffered severe pain.",tr:"Şiddetli acı çekti.",hint:"antonim: mild"},
 "subsidize":{ex:"The government subsidizes farmers.",tr:"Hükümet çiftçilere destek veriyor.",hint:"subsidy = sübvansiyon"},
-"subtle":{ex:"There is a subtle difference.",tr:"İnce bir fark var.",hint:"subtle = ince/narin; antonim: obvious"},
-"sufficient":{ex:"We have sufficient food.",tr:"Yeterli yiyeceğimiz var.",hint:"sufficient = yeterli; antonim: insufficient"},
-"summary":{ex:"Please write a summary.",tr:"Lütfen bir özet yaz.",hint:"sum = toplam → summary"},
-"superficial":{ex:"His knowledge is superficial.",tr:"Bilgisi yüzeysel.",hint:"super+ficial = yüzeyde; antonim: profound"},
-"superior":{ex:"This product is superior.",tr:"Bu ürün daha üstün.",hint:"superior = üstün; antonim: inferior"},
-"supplementary":{ex:"This is a supplementary book.",tr:"Bu ek bir kitap.",hint:"supplement = ek → supplementary"},
+"subtle":{ex:"There is a subtle difference.",tr:"İnce bir fark var.",hint:"antonim: obvious"},
+"sufficient":{ex:"We have sufficient food.",tr:"Yeterli yiyeceğimiz var.",hint:"antonim: insufficient"},
+"summary":{ex:"Please write a summary.",tr:"Lütfen bir özet yaz.",hint:"sum = toplam"},
+"superficial":{ex:"His knowledge is superficial.",tr:"Bilgisi yüzeysel.",hint:"antonim: profound"},
+"superior":{ex:"This product is superior.",tr:"Bu ürün daha üstün.",hint:"antonim: inferior"},
+"supplementary":{ex:"This is a supplementary book.",tr:"Bu ek bir kitap.",hint:"supplement = ek"},
 "surmount":{ex:"He surmounted all obstacles.",tr:"Tüm engelleri aştı.",hint:"sur+mount = üstüne çıkmak"},
-"surpass":{ex:"She surpassed all expectations.",tr:"Tüm beklentileri aştı.",hint:"sur+pass = geçmek → aşmak"},
-"surgeon":{ex:"The surgeon performed the operation.",tr:"Cerrah ameliyatı yaptı.",hint:"surgery = cerrahi → surgeon"},
-"susceptible":{ex:"Children are susceptible to colds.",tr:"Çocuklar soğuk algınlığına karşı hassastır.",hint:"susceptible = duyarlı; antonim: immune"},
-"suspicion":{ex:"I have a suspicion about him.",tr:"Onun hakkında bir şüphem var.",hint:"suspect = şüphelenmek → suspicion"},
-"sustain":{ex:"We must sustain this growth.",tr:"Bu büyümeyi sürdürmeliyiz.",hint:"sustain = sürdürmek; sustainable = sürdürülebilir"},
-"swell":{ex:"His ankle began to swell.",tr:"Ayak bileği şişmeye başladı.",hint:"swell = şişmek; antonim: shrink"},
-"symptom":{ex:"Fever is a symptom of infection.",tr:"Ateş enfeksiyonun bir belirtisidir.",hint:"symptom = belirti; symptomatic = belirtili"},
-
-/* === SEVİYE 9 === */
-"synopsis":{ex:"Read the synopsis before watching.",tr:"İzlemeden önce özeti oku.",hint:"syn+opsis = birlikte görmek → özet"},
+"surpass":{ex:"She surpassed all expectations.",tr:"Tüm beklentileri aştı.",hint:"sur+pass = geçmek"},
+"survive":{ex:"Only few people survived.",tr:"Sadece az kişi hayatta kaldı.",hint:"sur+vive = üstünde yaşamak"},
+"sustain":{ex:"We must sustain this growth.",tr:"Bu büyümeyi sürdürmeliyiz.",hint:"sustainable = sürdürülebilir"},
+"symptom":{ex:"Fever is a symptom of infection.",tr:"Ateş enfeksiyonun bir belirtisidir.",hint:"symptomatic = belirtili"},
+"synopsis":{ex:"Read the synopsis before watching.",tr:"İzlemeden önce özeti oku.",hint:"syn+opsis = özet"},
 "tackle":{ex:"We must tackle this problem.",tr:"Bu sorunla başa çıkmalıyız.",hint:"tackle = üstesinden gelmek"},
-"tempt":{ex:"The cake tempted me.",tr:"Pasta beni cezbetti.",hint:"tempt = ayartmak; temptation = cazibe"},
+"tempt":{ex:"The cake tempted me.",tr:"Pasta beni cezbetti.",hint:"temptation = cazibe"},
 "testimony":{ex:"His testimony was crucial.",tr:"Tanıklığı çok önemliydi.",hint:"testify = tanıklık etmek"},
-"thorough":{ex:"She did a thorough job.",tr:"Eksiksiz bir iş yaptı.",hint:"thorough = titiz/kapsamlı"},
-"thoughtful":{ex:"That was very thoughtful of you.",tr:"Bu çok düşünceli bir davranıştı.",hint:"thought = düşünce → thoughtful"},
-"thrifty":{ex:"She is a thrifty shopper.",tr:"O tutumlu bir alışverişçi.",hint:"thrift = tutumluluk → thrifty"},
-"throng":{ex:"A throng of fans waited outside.",tr:"Bir hayran kalabalığı dışarıda bekliyordu.",hint:"throng = kalabalık; antonim: few"},
-"through":{ex:"We walked through the forest.",tr:"Ormandan geçtik.",hint:"through = içinden/boyunca"},
-"tilted":{ex:"The picture is tilted.",tr:"Tablo eğilmiş.",hint:"tilt = eğmek → tilted"},
-"top":{ex:"We reached the top of the mountain.",tr:"Dağın zirvesine ulaştık.",hint:"top = üst/zirve; antonim: bottom"},
-"trace":{ex:"We couldn't trace the call.",tr:"Aramanın izini süremedik.",hint:"trace = iz sürmek/iz"},
-"trail":{ex:"The dog trailed the scent.",tr:"Köpek kokuyu takip etti.",hint:"trail = izlemek; 'trail behind'"},
-"tramped":{ex:"They tramped through the snow.",tr:"Karda ağır adımlarla yürüdüler.",hint:"tramp = ağır adımlarla yürümek"},
-"tranquil":{ex:"The garden was tranquil.",tr:"Bahçe sakin ve huzurluydu.",hint:"tranquil = huzurlu; tranquillity = huzur"},
+"thorough":{ex:"She did a thorough job.",tr:"Eksiksiz bir iş yaptı.",hint:"thorough = titiz"},
+"thoughtful":{ex:"That was very thoughtful of you.",tr:"Bu çok düşünceli bir davranıştı.",hint:"thought = düşünce"},
+"thrifty":{ex:"She is a thrifty shopper.",tr:"O tutumlu bir alışverişçi.",hint:"thrift = tutumluluk"},
+"tranquil":{ex:"The garden was tranquil.",tr:"Bahçe sakin ve huzurluydu.",hint:"tranquillity = huzur"},
 "transaction":{ex:"The transaction was completed.",tr:"İşlem tamamlandı.",hint:"transact = işlem yapmak"},
-"treachery":{ex:"His treachery shocked everyone.",tr:"İhaneti herkesi şok etti.",hint:"treachery = ihanet; treacherous = hain"},
-"treatment":{ex:"The treatment was successful.",tr:"Tedavi başarılıydı.",hint:"treat = davranmak/tedavi etmek"},
-"trial":{ex:"The trial lasted three days.",tr:"Duruşma üç gün sürdü.",hint:"try = denemek/yargılamak → trial"},
-"triumph":{ex:"It was a great triumph.",tr:"Büyük bir zaferdi.",hint:"triumph = zafer; triumphant = muzaffer"},
+"treachery":{ex:"His treachery shocked everyone.",tr:"İhaneti herkesi şok etti.",hint:"treacherous = hain"},
+"treatment":{ex:"The treatment was successful.",tr:"Tedavi başarılıydı.",hint:"treat = davranmak/tedavi"},
+"trial":{ex:"The trial lasted three days.",tr:"Duruşma üç gün sürdü.",hint:"try = denemek/yargılamak"},
+"triumph":{ex:"It was a great triumph.",tr:"Büyük bir zaferdi.",hint:"triumphant = muzaffer"},
 "underestimate":{ex:"Don't underestimate him.",tr:"Onu hafife alma.",hint:"under+estimate = azımsamak"},
 "underground":{ex:"We took the underground.",tr:"Metroyu kullandık.",hint:"under+ground = yeraltı"},
-"undermine":{ex:"His comments undermined my confidence.",tr:"Yorumları özgüvenimi sarstı.",hint:"under+mine = altını kazmak → baltalamak"},
-"underrate":{ex:"Don't underrate her abilities.",tr:"Yeteneklerini küçümseme.",hint:"under+rate = düşük değerlendirmek"},
-"unpleasant":{ex:"It was an unpleasant experience.",tr:"Nahoş bir deneyimdi.",hint:"un+pleasant = nahoş; antonim: pleasant"},
-"unrestrained":{ex:"His unrestrained anger scared us.",tr:"Dizginlenmemiş öfkesi bizi korkuttu.",hint:"un+restrained = dizginsiz"},
-"unwilling":{ex:"He was unwilling to help.",tr:"Yardım etmeye isteksizdi.",hint:"un+willing = isteksiz; antonim: willing"},
-"unwillingness":{ex:"Her unwillingness was obvious.",tr:"İsteksizliği açıktı.",hint:"un+willing+ness = isteksizlik"},
-"vacant":{ex:"The seat was vacant.",tr:"Koltuk boştu.",hint:"vacant = boş; 'vacancy' = boş yer"},
-"vague":{ex:"His answer was vague.",tr:"Cevabı belirsizdi.",hint:"vague = belirsiz; antonim: precise"},
-"vanity":{ex:"His vanity knows no bounds.",tr:"Kibri sınır tanımıyor.",hint:"vain = kibirli → vanity"},
-"varied":{ex:"The menu is very varied.",tr:"Menü çok çeşitli.",hint:"vary = değişmek → varied"},
-"vast":{ex:"The desert is vast.",tr:"Çöl çok geniş.",hint:"vast = engin; antonim: tiny"},
+"undermine":{ex:"His comments undermined my confidence.",tr:"Yorumları özgüvenimi sarstı.",hint:"under+mine = altını kazmak"},
+"unpleasant":{ex:"It was an unpleasant experience.",tr:"Nahoş bir deneyimdi.",hint:"antonim: pleasant"},
+"unwilling":{ex:"He was unwilling to help.",tr:"Yardım etmeye isteksizdi.",hint:"antonim: willing"},
+"vague":{ex:"His answer was vague.",tr:"Cevabı belirsizdi.",hint:"antonim: precise"},
+"vanity":{ex:"His vanity knows no bounds.",tr:"Kibri sınır tanımıyor.",hint:"vain = kibirli"},
+"vast":{ex:"The desert is vast.",tr:"Çöl çok geniş.",hint:"antonim: tiny"},
 "versatile":{ex:"She is a versatile actress.",tr:"O çok yönlü bir aktris.",hint:"versatile = çok yönlü"},
-"vexed":{ex:"He was vexed by the question.",tr:"Sorudan rahatsız oldu.",hint:"vexed = canı sıkılmış; antonim: pleased"},
-"violent":{ex:"The storm was violent.",tr:"Fırtına şiddetliydi.",hint:"violent = şiddetli; violence = şiddet"},
-"vital":{ex:"Water is vital for survival.",tr:"Su hayatta kalmak için hayatidir.",hint:"vital = hayati; antonim: trivial"},
-"voluntarily":{ex:"She volunteered voluntarily.",tr:"Gönüllü olarak gönüllü oldu.",hint:"voluntary = gönüllü → voluntarily"},
-"vulnerable":{ex:"Children are vulnerable to disease.",tr:"Çocuklar hastalıklara karşı hassastır.",hint:"vulnerable = savunmasız; antonim: invulnerable"},
-"wasteful":{ex:"His wasteful spending worried us.",tr:"Savurgan harcamaları bizi endişelendirdi.",hint:"waste = israf → wasteful"},
+"violent":{ex:"The storm was violent.",tr:"Fırtına şiddetliydi.",hint:"violence = şiddet"},
+"vital":{ex:"Water is vital for survival.",tr:"Su hayatta kalmak için hayatidir.",hint:"antonim: trivial"},
+"vulnerable":{ex:"Children are vulnerable to disease.",tr:"Çocuklar hastalıklara karşı hassastır.",hint:"antonim: invulnerable"},
+"wasteful":{ex:"His wasteful spending worried us.",tr:"Savurgan harcamaları bizi endişelendirdi.",hint:"waste = israf"},
 "withdraw":{ex:"He withdrew from the competition.",tr:"Yarışmadan çekildi.",hint:"with+draw = geri çekmek"},
-"wither":{ex:"The flowers withered in the sun.",tr:"Çiçekler güneşte soldu.",hint:"wither = solmak; antonim: bloom"},
-"wrinkle":{ex:"Her face showed wrinkles.",tr:"Yüzünde kırışıklıklar vardı.",hint:"wrinkle = kırışıklık/buruşmak"},
-"yield":{ex:"The investment yielded high returns.",tr:"Yatırım yüksek getiri sağladı.",hint:"yield = getiri/boyun eğmek"},
+"wither":{ex:"The flowers withered in the sun.",tr:"Çiçekler güneşte soldu.",hint:"antonim: bloom"},
+"wrinkle":{ex:"Her face showed wrinkles.",tr:"Yüzünde kırışıklıklar vardı.",hint:"wrinkle = kırışıklık"},
+"yield":{ex:"The investment yielded high returns.",tr:"Yatırım yüksek getiri sağladı.",hint:"yield = getiri"},
 "zinnia":{ex:"Zinnias grew in the garden.",tr:"Bahçede zenya çiçekleri büyüdü.",hint:"zinnia = zenya çiçeği"},
-"intrepid":{ex:"The intrepid explorer went alone.",tr:"Korkusuz kâşif yalnız gitti.",hint:"in+trepid = korkusuz; antonim: timid"},
-"prolific":{ex:"She is a prolific writer.",tr:"O üretken bir yazar.",hint:"prolific = verimli; antonim: unproductive"},
-"relent":{ex:"He finally relented and agreed.",tr:"Sonunda yumuşadı ve kabul etti.",hint:"relent = yumuşamak; relentless = amansız"},
-"scorch":{ex:"The sun scorched the earth.",tr:"Güneş toprağı kavurdu.",hint:"scorch = yakmak/kavurmak"},
-"overemphatic":{ex:"His speech was overemphatic.",tr:"Konuşması fazla vurguluydu.",hint:"over+emphatic = aşırı vurgulu"},
+"intrepid":{ex:"The intrepid explorer went alone.",tr:"Korkusuz kâşif yalnız gitti.",hint:"antonim: timid"},
+"prolific":{ex:"She is a prolific writer.",tr:"O üretken bir yazar.",hint:"antonim: unproductive"},
+"relent":{ex:"He finally relented and agreed.",tr:"Sonunda yumuşadı ve kabul etti.",hint:"relentless = amansız"},
+"scorch":{ex:"The sun scorched the earth.",tr:"Güneş toprağı kavurdu.",hint:"scorch = yakmak"},
 "overseas":{ex:"He works overseas.",tr:"Yurt dışında çalışıyor.",hint:"over+seas = denizaşırı"},
-"put off":{ex:"He put off his jacket.",tr:"Ceketini çıkardı.",hint:"put off = çıkarmak/ertelemek"},
-
-/* === SEVİYE 10 === */
-"pride":{ex:"He takes pride in his work.",tr:"İşiyle gurur duyar.",hint:"proud = gururlu → pride"},
-"of his own accord":{ex:"He left of his own accord.",tr:"Kendi isteğiyle ayrıldı.",hint:"of one's own accord = kendi isteğiyle"},
-"neglect":{ex:"He neglected his studies.",tr:"Derslerini ihmal etti.",hint:"neglect = ihmal; negligent = ihmalkâr"},
+"pride":{ex:"He takes pride in his work.",tr:"İşiyle gurur duyar.",hint:"proud = gururlu"},
+"neglect":{ex:"He neglected his studies.",tr:"Derslerini ihmal etti.",hint:"negligent = ihmalkâr"},
 "nod":{ex:"She nodded in agreement.",tr:"Onaylarcasına başını salladı.",hint:"nod = baş sallamak"},
-"object":{ex:"I object to this decision!",tr:"Bu karara itiraz ediyorum!",hint:"object = itiraz; objection = itiraz"},
-"pick up":{ex:"I'll pick you up at 5.",tr:"Seni saat 5'te alacağım.",hint:"pick up = almak/toplamak"},
-"restored":{ex:"The old house was restored.",tr:"Eski ev restore edildi.",hint:"restore = onarmak → restored"},
-"stayed late":{ex:"He stayed late at the office.",tr:"Ofiste geç saate kadar kaldı.",hint:"stay late = geç kalmak/oyalanmak"},
-"step":{ex:"Take one step at a time.",tr:"Her seferde bir adım at.",hint:"step = adım; step-by-step"},
-"unpardonable":{ex:"That was an unpardonable mistake.",tr:"Bu affedilmez bir hataydı.",hint:"un+pardon+able = affedilmez"},
-"unrehearsed":{ex:"The speech was unrehearsed.",tr:"Konuşma provasız yapıldı.",hint:"un+rehearsed = provasız"},
-"wise":{ex:"He is a wise old man.",tr:"O bilge bir yaşlı adam.",hint:"wise = bilge/akıllı; wisdom = bilgelik"},
-"humorous":{ex:"He told a humorous story.",tr:"Komik bir hikâye anlattı.",hint:"humor = mizah → humorous"},
-"huge":{ex:"That's a huge problem.",tr:"Bu çok büyük bir sorun.",hint:"huge = kocaman; antonim: tiny"},
+"object":{ex:"I object to this decision!",tr:"Bu karara itiraz ediyorum!",hint:"objection = itiraz"},
+"restored":{ex:"The old house was restored.",tr:"Eski ev restore edildi.",hint:"restore = onarmak"},
+"wise":{ex:"He is a wise old man.",tr:"O bilge bir yaşlı adam.",hint:"wisdom = bilgelik"},
+"humorous":{ex:"He told a humorous story.",tr:"Komik bir hikâye anlattı.",hint:"humor = mizah"},
+"huge":{ex:"That's a huge problem.",tr:"Bu çok büyük bir sorun.",hint:"antonim: tiny"},
 "homeless":{ex:"The homeless need shelter.",tr:"Evsizlerin barınağa ihtiyacı var.",hint:"home+less = evsiz"},
 "hoax":{ex:"The bomb threat was a hoax.",tr:"Bomba tehdidi bir aldatmacaydı.",hint:"hoax = aldatmaca"},
 "highway":{ex:"We drove on the highway.",tr:"Otoyolda sürdük.",hint:"high+way = anayol"},
-"hectic":{ex:"It was a hectic morning.",tr:"Telaşlı bir sabahtı.",hint:"hectic = telaşlı/yoğun"},
-"haven":{ex:"The library is my haven.",tr:"Kütüphane benim sığınağım.",hint:"haven = sığınak/liman"},
-"haste":{ex:"In haste, he forgot his keys.",tr:"Aceleyle anahtarlarını unuttu.",hint:"haste = acele; hasten = acele etmek"},
-"goods":{ex:"The goods were delivered.",tr:"Mallar teslim edildi.",hint:"goods = mallar; good (sıfat) farklı"},
+"haste":{ex:"In haste, he forgot his keys.",tr:"Aceleyle anahtarlarını unuttu.",hint:"hasten = acele etmek"},
+"goods":{ex:"The goods were delivered.",tr:"Mallar teslim edildi.",hint:"goods = mallar"},
 "giggle":{ex:"The girls giggled together.",tr:"Kızlar birlikte kıkırdadılar.",hint:"giggle = kıkırdamak"},
 "gash":{ex:"He had a deep gash on his arm.",tr:"Kolunda derin bir yara vardı.",hint:"gash = derin yara"},
-"fume":{ex:"Toxic fumes filled the room.",tr:"Zehirli dumanlar odayı doldurdu.",hint:"fume = duman; 'fuming' = öfkeli"},
-"frightened":{ex:"The child was frightened.",tr:"Çocuk korkmuştu.",hint:"fright = korku → frightened"},
+"fume":{ex:"Toxic fumes filled the room.",tr:"Zehirli dumanlar odayı doldurdu.",hint:"fume = duman"},
+"frightened":{ex:"The child was frightened.",tr:"Çocuk korkmuştu.",hint:"fright = korku"},
 "forestall":{ex:"He forestalled the crisis.",tr:"Krizi önledi.",hint:"fore+stall = önceden engellemek"},
 "distraught":{ex:"She was distraught after the news.",tr:"Haberden sonra perişandı.",hint:"distraught = perişan"},
-"dispense":{ex:"The machine dispenses coffee.",tr:"Makine kahve dağıtıyor.",hint:"dispense = dağıtmak; dispenser = dağıtıcı"},
-"disparage":{ex:"Don't disparage others.",tr:"Başkalarını küçümseme.",hint:"disparage = kötülemek; antonim: praise"},
-"discreet":{ex:"She is very discreet.",tr:"O çok ağzı sıkı.",hint:"discreet = ihtiyatlı; antonim: indiscreet"},
-"discord":{ex:"Family discord upset her.",tr:"Aile anlaşmazlığı onu üzdü.",hint:"discord = anlaşmazlık; antonim: harmony"},
-"deplete":{ex:"The resources were depleted.",tr:"Kaynaklar tükendi.",hint:"deplete = tüketmek; antonim: replenish"},
+"dispense":{ex:"The machine dispenses coffee.",tr:"Makine kahve dağıtıyor.",hint:"dispenser = dağıtıcı"},
+"disparage":{ex:"Don't disparage others.",tr:"Başkalarını küçümseme.",hint:"antonim: praise"},
+"discreet":{ex:"She is very discreet.",tr:"O çok ağzı sıkı.",hint:"antonim: indiscreet"},
+"discord":{ex:"Family discord upset her.",tr:"Aile anlaşmazlığı onu üzdü.",hint:"antonim: harmony"},
+"deplete":{ex:"The resources were depleted.",tr:"Kaynaklar tükendi.",hint:"antonim: replenish"},
 "deplore":{ex:"We deplore such behavior.",tr:"Bu tür davranışları kınıyoruz.",hint:"deplore = kınamak"}
 };
 
-/* ============ SEVİYE TANIMLARI ============ */
 const LEVELS = [
   {n:1, name:"Başlangıç", trophy:"🌱", color:"#4ade80"},
   {n:2, name:"Kolay", trophy:"🌿", color:"#22c55e"},
@@ -982,13 +409,10 @@ const LEVELS = [
 
 const QUESTIONS_PER_LEVEL = 20;
 const PASS_RATIO = 0.70;
-
 const S = { mode:'en-tr', questions:[], current:0, correct:0, wrong:0, dontknow:0, answered:false, level:0, isLevelMode:false };
 const LS = { wrong:'yds_wrong_v5', dontknow:'yds_dontknow_v5', progress:'yds_progress_v5', stats:'yds_stats_v5' };
-
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
-
 function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
 function showToast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(showToast._t); showToast._t = setTimeout(()=>t.classList.remove('show'), 2000); }
 function navigate(id){ $$('.screen').forEach(s => s.classList.remove('active')); const el = document.getElementById(id); if(el) el.classList.add('active'); window.scrollTo(0,0); }
@@ -1006,24 +430,12 @@ function buildQuestion(pair, pool, mode){
   const correctAnswer = dir === 'en-tr' ? meaning : word;
   const used = new Set([meaning]); const distractors = [];
   const sameLevelPool = pool.filter(p => p[2] === lvl && p[0] !== word);
-  for(const p of shuffle(sameLevelPool)){
-    const v = dir === 'en-tr' ? p[1] : p[0];
-    if(!used.has(v)){ used.add(v); distractors.push(v); if(distractors.length===3) break; }
-  }
-  if(distractors.length < 3){
-    for(const p of shuffle(WORDS)){
-      if(p[0] === word) continue;
-      const v = dir === 'en-tr' ? p[1] : p[0];
-      if(!used.has(v)){ used.add(v); distractors.push(v); if(distractors.length===3) break; }
-    }
-  }
+  for(const p of shuffle(sameLevelPool)){ const v = dir === 'en-tr' ? p[1] : p[0]; if(!used.has(v)){ used.add(v); distractors.push(v); if(distractors.length===3) break; } }
+  if(distractors.length < 3){ for(const p of shuffle(WORDS)){ if(p[0] === word) continue; const v = dir === 'en-tr' ? p[1] : p[0]; if(!used.has(v)){ used.add(v); distractors.push(v); if(distractors.length===3) break; } } }
   const options = shuffle([{text: correctAnswer, correct: true}, ...distractors.map(d => ({text: d, correct: false}))]);
   return {word, meaning, dir, prompt, correctAnswer, options, lvl};
 }
-function buildQuiz(pool, mode, count){
-  const picks = shuffle(pool).slice(0, Math.min(count, pool.length));
-  return picks.map(w => buildQuestion(w, pool, mode));
-}
+function buildQuiz(pool, mode, count){ const picks = shuffle(pool).slice(0, Math.min(count, pool.length)); return picks.map(w => buildQuestion(w, pool, mode)); }
 
 function renderLevelGrid(){
   const prog = loadProgress(); const grid = $('#levelGrid'); grid.innerHTML = '';
@@ -1039,7 +451,6 @@ function renderLevelGrid(){
     grid.appendChild(b);
   });
 }
-
 function renderAchievements(){
   const prog = loadProgress();
   $('#achList').innerHTML = LEVELS.map(L => {
@@ -1084,40 +495,29 @@ function renderQuestion(){
   $('#qfeedback').innerHTML = '';
   $('#qnext').classList.add('hidden');
 }
-
-// Cümlede kelimeyi vurgula
 function highlightWord(sentence, word){
   if(!sentence) return '';
-  // Kelime öbeklerini de destekle (in charge, pick up)
   const esc = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(`\\b${esc}\\w*\\b`, 'gi');
   return sentence.replace(re, m => `<span class="hl">${m}</span>`);
 }
-
 function renderLearnBox(word){
   const ctx = CONTEXT[word];
   if(!ctx) return '';
   let html = '<div class="learnbox">';
-  if(ctx.ex){
-    html += `<div class="lbl">📖 ÖRNEK CÜMLE</div>`;
-    html += `<div class="exen">"${highlightWord(ctx.ex, word)}"</div>`;
-    if(ctx.tr) html += `<div class="extr">🇹🇷 ${ctx.tr}</div>`;
-  }
-  if(ctx.hint){
-    html += `<div class="lbl" style="margin-top:6px">💡 ÇAĞRIŞIM / İPUCU</div>`;
-    html += `<div class="hint">${ctx.hint}</div>`;
-  }
+  if(ctx.ex){ html += `<div class="lbl">📖 ÖRNEK CÜMLE</div><div class="exen">"${highlightWord(ctx.ex, word)}"</div>`; if(ctx.tr) html += `<div class="extr">🇹🇷 ${ctx.tr}</div>`; }
+  if(ctx.hint){ html += `<div class="lbl" style="margin-top:6px">💡 ÇAĞRIŞIM / İPUCU</div><div class="hint">${ctx.hint}</div>`; }
   html += '</div>';
   return html;
 }
 
+/* 🔥 DOĞRU CEVAPTA OTOMATİK GEÇİŞ */
 function answer(idx){
   if(S.answered) return;
   S.answered = true;
   const q = S.questions[S.current];
   const btns = Array.from($('#qoptions').querySelectorAll('.option'));
   let result;
-
   if(idx === -1){
     result = 'dontknow'; S.dontknow++;
     btns.forEach((b, i) => { b.disabled = true; if(i < q.options.length && q.options[i].correct) b.classList.add('correct'); });
@@ -1133,19 +533,15 @@ function answer(idx){
       else if(q.options[i].correct) b.classList.add('correct');
     });
   }
-
   if(result === 'wrong') addWrong(q.word, q.meaning);
   if(result === 'dontknow') addDontKnow(q.word, q.meaning);
   if(result === 'correct'){ removeFromWrong(q.word); removeFromDontKnow(q.word); }
-
   const fb = $('#qfeedback');
   let fbHtml = '';
   if(result === 'correct'){
     fbHtml = `<div class="feedback" style="background:#18322a;color:#c8f0d6"><b>✓ Doğru!</b> ${q.word} → ${q.meaning}</div>`;
     const ctx = CONTEXT[q.word];
-    if(ctx && ctx.ex){
-      fbHtml += `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, q.word)}"</div></div>`;
-    }
+    if(ctx && ctx.ex){ fbHtml += `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, q.word)}"</div></div>`; }
   } else if(result === 'wrong'){
     fbHtml = `<div class="feedback" style="background:#3a2029;color:#ffd1da"><b>✗ Yanlış.</b> Doğru: <b>${q.correctAnswer}</b></div>`;
     fbHtml += renderLearnBox(q.word);
@@ -1154,43 +550,14 @@ function answer(idx){
     fbHtml += renderLearnBox(q.word);
   }
   fb.innerHTML = fbHtml;
-
   const next = $('#qnext');
-  
   if(result === 'correct'){
     next.classList.add('hidden');
-    setTimeout(() => { nextQuestion(); }, 700);
+    setTimeout(() => { if(S.answered) nextQuestion(); }, 700);
   } else {
     next.classList.remove('hidden');
     next.textContent = (S.current + 1 >= S.questions.length) ? 'Bitir →' : 'Sonraki →';
   }
-}
-
-  if(result === 'wrong') addWrong(q.word, q.meaning);
-  if(result === 'dontknow') addDontKnow(q.word, q.meaning);
-  if(result === 'correct'){ removeFromWrong(q.word); removeFromDontKnow(q.word); }
-
-  const fb = $('#qfeedback');
-  let fbHtml = '';
-  if(result === 'correct'){
-    fbHtml = `<div class="feedback" style="background:#18322a;color:#c8f0d6"><b>✓ Doğru!</b> ${q.word} → ${q.meaning}</div>`;
-    // Doğruysa sadece kısa örnek göster (bonus)
-    const ctx = CONTEXT[q.word];
-    if(ctx && ctx.ex){
-      fbHtml += `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, q.word)}"</div></div>`;
-    }
-  } else if(result === 'wrong'){
-    fbHtml = `<div class="feedback" style="background:#3a2029;color:#ffd1da"><b>✗ Yanlış.</b> Doğru: <b>${q.correctAnswer}</b></div>`;
-    fbHtml += renderLearnBox(q.word);
-  } else {
-    fbHtml = `<div class="feedback" style="background:#2d2b40;color:#d0c8ff"><b>🤷 Bilmiyorum.</b> Doğru: <b>${q.correctAnswer}</b></div>`;
-    fbHtml += renderLearnBox(q.word);
-  }
-  fb.innerHTML = fbHtml;
-
-  const next = $('#qnext');
-  next.classList.remove('hidden');
-  next.textContent = (S.current + 1 >= S.questions.length) ? 'Bitir →' : 'Sonraki →';
 }
 
 function nextQuestion(){
@@ -1208,7 +575,6 @@ function finishQuiz(){
   st.totalCorrect = (st.totalCorrect || 0) + S.correct;
   st.lastPlayed = Date.now();
   saveStats(st);
-
   if(S.isLevelMode){
     const lvl = S.level;
     const prog = loadProgress();
@@ -1222,41 +588,22 @@ function finishQuiz(){
       $('#ldTitle').textContent = `Bölüm ${lvl} Geçildi! ${L.name}`;
       $('#ldSub').textContent = `"${L.trophy} ${L.name}" rozetini kazandın!`;
       $('#ldBadge').textContent = ratio === 1 ? 'MÜKEMMEL' : 'BÖLÜM GEÇİLDİ';
-      $('#ldStats').innerHTML = `
-        <div class="statbox"><span class="n" style="color:#7fe0a5">${S.correct}</span><span class="l">Doğru</span></div>
-        <div class="statbox"><span class="n" style="color:#ff9aae">${S.wrong}</span><span class="l">Yanlış</span></div>
-        <div class="statbox"><span class="n" style="color:#c0bcff">${S.dontknow}</span><span class="l">Bilmiyorum</span></div>
-        <div class="statbox"><span class="n">%${Math.round(ratio*100)}</span><span class="l">Başarı</span></div>`;
-      if(lvl < 10){
-        $('#ldNextLevel').textContent = `▶️ Bölüm ${lvl+1}'e Geç`;
-        $('#ldNextLevel').onclick = () => startLevel(lvl+1);
-        $('#ldNextLevel').classList.remove('hidden');
-      } else {
-        $('#ldNextLevel').textContent = '🎉 Tüm Bölümler Tamam!';
-        $('#ldNextLevel').onclick = () => navigate('achievements');
-      }
+      $('#ldStats').innerHTML = `<div class="statbox"><span class="n" style="color:#7fe0a5">${S.correct}</span><span class="l">Doğru</span></div><div class="statbox"><span class="n" style="color:#ff9aae">${S.wrong}</span><span class="l">Yanlış</span></div><div class="statbox"><span class="n" style="color:#c0bcff">${S.dontknow}</span><span class="l">Bilmiyorum</span></div><div class="statbox"><span class="n">%${Math.round(ratio*100)}</span><span class="l">Başarı</span></div>`;
+      if(lvl < 10){ $('#ldNextLevel').textContent = `▶️ Bölüm ${lvl+1}'e Geç`; $('#ldNextLevel').onclick = () => startLevel(lvl+1); $('#ldNextLevel').classList.remove('hidden'); }
+      else { $('#ldNextLevel').textContent = '🎉 Tüm Bölümler Tamam!'; $('#ldNextLevel').onclick = () => navigate('achievements'); }
       navigate('levelDone');
     } else {
-      $('#lfStats').innerHTML = `
-        <div class="statbox"><span class="n" style="color:#7fe0a5">${S.correct}</span><span class="l">Doğru</span></div>
-        <div class="statbox"><span class="n" style="color:#ff9aae">${S.wrong}</span><span class="l">Yanlış</span></div>
-        <div class="statbox"><span class="n" style="color:#c0bcff">${S.dontknow}</span><span class="l">Bilmiyorum</span></div>
-        <div class="statbox"><span class="n">%${Math.round(ratio*100)}</span><span class="l">Başarı</span></div>`;
+      $('#lfStats').innerHTML = `<div class="statbox"><span class="n" style="color:#7fe0a5">${S.correct}</span><span class="l">Doğru</span></div><div class="statbox"><span class="n" style="color:#ff9aae">${S.wrong}</span><span class="l">Yanlış</span></div><div class="statbox"><span class="n" style="color:#c0bcff">${S.dontknow}</span><span class="l">Bilmiyorum</span></div><div class="statbox"><span class="n">%${Math.round(ratio*100)}</span><span class="l">Başarı</span></div>`;
       $('#lfRetry').onclick = () => startLevel(lvl);
       navigate('levelFail');
     }
     return;
   }
-
   const pct = Math.round(ratio * 100);
   $('#resultBadge').textContent = pct>=80?'MÜKEMMEL':pct>=50?'İYİ':'TEKRAR GEREK';
   $('#resultTitle').textContent = pct>=80?'Harika iş! 🎉':pct>=50?'Fena değil 👍':'Biraz daha çalışalım 💪';
   $('#resultText').textContent = `${total} sorudan ${S.correct} tanesini doğru bildin.`;
-  $('#resultStats').innerHTML = `
-    <div class="statbox"><span class="n" style="color:#7fe0a5">${S.correct}</span><span class="l">Doğru</span></div>
-    <div class="statbox"><span class="n" style="color:#ff9aae">${S.wrong}</span><span class="l">Yanlış</span></div>
-    <div class="statbox"><span class="n" style="color:#c0bcff">${S.dontknow}</span><span class="l">Bilmiyorum</span></div>
-    <div class="statbox"><span class="n">%${pct}</span><span class="l">Başarı</span></div>`;
+  $('#resultStats').innerHTML = `<div class="statbox"><span class="n" style="color:#7fe0a5">${S.correct}</span><span class="l">Doğru</span></div><div class="statbox"><span class="n" style="color:#ff9aae">${S.wrong}</span><span class="l">Yanlış</span></div><div class="statbox"><span class="n" style="color:#c0bcff">${S.dontknow}</span><span class="l">Bilmiyorum</span></div><div class="statbox"><span class="n">%${pct}</span><span class="l">Başarı</span></div>`;
   navigate('result');
 }
 
@@ -1268,15 +615,12 @@ function removeFromDontKnow(w){ const map = loadMap(LS.dontknow); if(map[w]){ de
 function renderWrong(){
   const map = loadMap(LS.wrong);
   const entries = Object.entries(map).sort((a,b)=>b[1].count - a[1].count);
-  $('#wrongList').innerHTML = entries.length === 0
-    ? `<div class="empty">Henüz yanlışın yok. 🎉</div>`
-    : entries.map(([w,d]) => {
-        const ctx = CONTEXT[w];
-        let extra = '';
-        if(ctx && ctx.ex) extra = `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, w)}"</div>${ctx.tr?`<div class="extr" style="font-size:13px">${ctx.tr}</div>`:''}</div>`;
-        else if(ctx && ctx.hint) extra = `<div class="learnbox" style="margin-top:10px"><div class="hint">${ctx.hint}</div></div>`;
-        return `<details><summary>${w} <span style="color:#8792b1;font-size:12px;font-weight:400">(${d.count}×)</span></summary><div class="list">${d.meaning}</div>${extra}</details>`;
-      }).join('');
+  $('#wrongList').innerHTML = entries.length === 0 ? `<div class="empty">Henüz yanlışın yok. 🎉</div>` : entries.map(([w,d]) => {
+    const ctx = CONTEXT[w]; let extra = '';
+    if(ctx && ctx.ex) extra = `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, w)}"</div>${ctx.tr?`<div class="extr" style="font-size:13px">${ctx.tr}</div>`:''}</div>`;
+    else if(ctx && ctx.hint) extra = `<div class="learnbox" style="margin-top:10px"><div class="hint">${ctx.hint}</div></div>`;
+    return `<details><summary>${w} <span style="color:#8792b1;font-size:12px;font-weight:400">(${d.count}×)</span></summary><div class="list">${d.meaning}</div>${extra}</details>`;
+  }).join('');
   const act = $('#wrongActions'); act.innerHTML = '';
   if(entries.length > 0){
     const b1 = document.createElement('button');
@@ -1289,19 +633,15 @@ function renderWrong(){
     act.appendChild(b2);
   }
 }
-
 function renderDontKnow(){
   const map = loadMap(LS.dontknow);
   const entries = Object.entries(map).sort((a,b)=>b[1].count - a[1].count);
-  $('#dontknowList').innerHTML = entries.length === 0
-    ? `<div class="empty">Bilmiyorum listen boş. 👍</div>`
-    : entries.map(([w,d]) => {
-        const ctx = CONTEXT[w];
-        let extra = '';
-        if(ctx && ctx.ex) extra = `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, w)}"</div>${ctx.tr?`<div class="extr" style="font-size:13px">${ctx.tr}</div>`:''}</div>`;
-        else if(ctx && ctx.hint) extra = `<div class="learnbox" style="margin-top:10px"><div class="hint">${ctx.hint}</div></div>`;
-        return `<details><summary>${w} <span style="color:#8792b1;font-size:12px;font-weight:400">(${d.count}×)</span></summary><div class="list">${d.meaning}</div>${extra}</details>`;
-      }).join('');
+  $('#dontknowList').innerHTML = entries.length === 0 ? `<div class="empty">Bilmiyorum listen boş. 👍</div>` : entries.map(([w,d]) => {
+    const ctx = CONTEXT[w]; let extra = '';
+    if(ctx && ctx.ex) extra = `<div class="learnbox" style="margin-top:10px"><div class="lbl">📖 ÖRNEK</div><div class="exen" style="font-size:14px">"${highlightWord(ctx.ex, w)}"</div>${ctx.tr?`<div class="extr" style="font-size:13px">${ctx.tr}</div>`:''}</div>`;
+    else if(ctx && ctx.hint) extra = `<div class="learnbox" style="margin-top:10px"><div class="hint">${ctx.hint}</div></div>`;
+    return `<details><summary>${w} <span style="color:#8792b1;font-size:12px;font-weight:400">(${d.count}×)</span></summary><div class="list">${d.meaning}</div>${extra}</details>`;
+  }).join('');
   const act = $('#dontknowActions'); act.innerHTML = '';
   if(entries.length > 0){
     const b1 = document.createElement('button');
@@ -1314,26 +654,22 @@ function renderDontKnow(){
     act.appendChild(b2);
   }
 }
-
 function renderWords(filter=''){
   const f = filter.trim().toLowerCase();
   const items = WORDS.filter(([w,m]) => !f || w.toLowerCase().includes(f) || m.toLowerCase().includes(f));
   const el = $('#wordsList');
   if(items.length === 0){ el.innerHTML = `<div class="empty">Sonuç yok.</div>`; return; }
-  const byLvl = {};
-  items.forEach(it => { const l = it[2]; (byLvl[l] = byLvl[l] || []).push(it); });
+  const byLvl = {}; items.forEach(it => { const l = it[2]; (byLvl[l] = byLvl[l] || []).push(it); });
   el.innerHTML = Object.keys(byLvl).sort((a,b)=>a-b).map(lvl => {
     const L = LEVELS[lvl-1];
     const list = byLvl[lvl].map(([w,m]) => {
-      const ctx = CONTEXT[w];
-      let extra = '';
+      const ctx = CONTEXT[w]; let extra = '';
       if(ctx && ctx.ex) extra = `<div class="learnbox" style="margin-top:8px"><div class="exen" style="font-size:13px">"${highlightWord(ctx.ex, w)}"</div>${ctx.tr?`<div class="extr" style="font-size:12px;margin-bottom:0">${ctx.tr}</div>`:''}${ctx.hint?`<div class="hint" style="font-size:12px;margin-top:8px">${ctx.hint}</div>`:''}</div>`;
       return `<details><summary>${w}</summary><div class="list">${m}</div>${extra}</details>`;
     }).join('');
     return `<div style="margin:16px 0 6px;font-weight:800;color:${L.color}">${L.trophy} BÖLÜM ${lvl} — ${L.name} (${byLvl[lvl].length} kelime)</div>${list}`;
   }).join('');
 }
-
 function updateHomeCounts(){
   const wrongN = Object.keys(loadMap(LS.wrong)).length;
   const dkN = Object.keys(loadMap(LS.dontknow)).length;
@@ -1341,15 +677,10 @@ function updateHomeCounts(){
   const doneN = Object.keys(prog).filter(k => prog[k].done).length;
   const st = loadStats();
   const acc = st.totalQuestions ? Math.round((st.totalCorrect / st.totalQuestions) * 100) : 0;
-  $('#homeStats').innerHTML = `
-    <div class="statbox"><span class="n" style="color:#facc15">${doneN}/10</span><span class="l">Bölüm Geçildi</span></div>
-    <div class="statbox"><span class="n" style="color:#7fe0a5">%${acc}</span><span class="l">Genel Başarı</span></div>
-    <div class="statbox"><span class="n">${WORDS.length}</span><span class="l">Toplam Kelime</span></div>
-    <div class="statbox"><span class="n" style="color:#ff9aae">${wrongN}</span><span class="l">Yanlış</span></div>`;
+  $('#homeStats').innerHTML = `<div class="statbox"><span class="n" style="color:#facc15">${doneN}/10</span><span class="l">Bölüm Geçildi</span></div><div class="statbox"><span class="n" style="color:#7fe0a5">%${acc}</span><span class="l">Genel Başarı</span></div><div class="statbox"><span class="n">${WORDS.length}</span><span class="l">Toplam Kelime</span></div><div class="statbox"><span class="n" style="color:#ff9aae">${wrongN}</span><span class="l">Yanlış</span></div>`;
   $('#wrongCount').textContent = wrongN > 0 ? `(${wrongN} kelime)` : '';
   $('#dkCount').textContent = dkN > 0 ? `(${dkN} kelime)` : '';
 }
-
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-action]');
   if(!t) return;
@@ -1366,17 +697,15 @@ document.addEventListener('click', (e) => {
   } else if(action === 'freeStart'){
     startFree(t.dataset.mode || 'en-tr');
   } else if(action === 'reset'){
-    if(confirm('Tüm veriler (ilerleme, başarılar, yanlışlar) silinsin mi?')){
+    if(confirm('Tüm veriler silinsin mi?')){
       Object.values(LS).forEach(k => localStorage.removeItem(k));
       updateHomeCounts();
       showToast('Tüm veriler silindi');
     }
   }
 });
-
 $('#qnext').addEventListener('click', nextQuestion);
 $('#wordSearch').addEventListener('input', (e) => renderWords(e.target.value));
-
 updateHomeCounts();
 </script>
 </body>
